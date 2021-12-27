@@ -1,12 +1,18 @@
+from dbms.Ddbms import LocalDBMethods2
+import settings.table as config
+import settings.sysmsg as msg
+
 from datetime import datetime
 from typing import List
+from queue import Queue
 import time
 import requests
 
 
 class UpBitNews:
-    def __init__(self, test:bool=False):
+    def __init__(self, database:LocalDBMethods2, test:bool=False,):
         self.url = "https://api-manager.upbit.com/api/v1/notices"
+        self.db = database
         self.run(test=test)
 
     def __coin_clean(self, content) -> List:
@@ -46,23 +52,28 @@ class UpBitNews:
             news = r['data']['list']
             db_row = list()
             for article in news:
-                if "거래" in article['title']:
-                    if "추가" in article['title']:
-                        k = self._get_article(article['id'])
-                        date = datetime.strptime(article['created_at'],
-                                                 '%Y-%m-%dT%H:%M:%S%z')
-                        for coin in k:
-                            row_ = (
-                                date.strftime('%Y%m%d'),
-                                date.strftime('%H%M%S'),
-                                coin,
-                                "ico_event",
-                                'long'
-                            )
-                            print(row_)
-
+                if ("거래" in article['title']) and ("추가" in article['title']):
+                    k = self._get_article(article['id'])
+                    date = datetime.strptime(
+                        article['created_at'],
+                        '%Y-%m-%dT%H:%M:%S%z'
+                    )
+                    for coin in k:
+                        row_ = (
+                            date.strftime('%Y%m%d'), date.strftime('%H%M%S'),
+                            coin, "ico_event", "long", "upbit"
+                        )
+                        db_row.append(row_)
+            self.db.insert_rows(
+                table_name=config.TABLENAME_EVENTDRIVEN,
+                col_=list(config.TABLE_EVENTDRIVEN.keys()),
+                rows_=db_row
+            )
         except Exception as e:
-            print(e)
+            if "unique".upper() in str(e):
+                print(msg.ERROR_0)
+            else:
+                print('error', e)
 
     def run(self, test:bool=False):
         if test is True:
@@ -75,7 +86,3 @@ class UpBitNews:
             while True:
                 self._get_news()
                 time.sleep(5)
-
-
-if __name__ == '__main__':
-    upb = UpBitNews()
