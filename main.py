@@ -3,17 +3,6 @@ import settings.sysmsg as msg
 from dbms.Ddbms import LocalDBMethods2
 from model.N_v0 import UpBitNews
 
-import json
-
-import ccxt
-
-
-def get_token(target:str, typ:str, loc='key.json') -> str:
-    with open(loc, 'r') as file:
-        dat = json.load(file)
-    file.close()
-    return dat[target][typ]
-
 
 class SigInsert:
     def __init__(self):
@@ -47,23 +36,6 @@ class SigInsert:
     def insert_signal(self):
         upb = UpBitNews(database=self.server)
         upb.run()
-
-
-class NightWatch:
-    def __init__(self):
-        # Insert Database
-        self.server = LocalDBMethods2('binance.db')
-        ...
-
-    @property
-    def __login_info(self):
-        id = get_token('binance', 'access_key')
-        pw = get_token('binance', 'secret_key')
-        return {'apiKey': id, 'secret': pw}
-
-    def send_order(self):
-        binance = ccxt.binance(config=self.__login_info)
-        # binance.create_limit_order()
 
 
 if __name__ == '__main__':
