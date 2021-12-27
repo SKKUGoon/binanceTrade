@@ -1,4 +1,8 @@
+import settings.table as config
+import settings.sysmsg as msg
 from dbms.Ddbms import LocalDBMethods2
+from model.N_v0 import UpBitNews
+
 import json
 
 import ccxt
@@ -11,10 +15,44 @@ def get_token(target:str, typ:str, loc='key.json') -> str:
     return dat[target][typ]
 
 
-class BinanceTrade:
+class SigInsert:
     def __init__(self):
-        info = self.__login_info
-        self.binance = ccxt.binance(config=info)
+        # Insert Database
+        self.server = LocalDBMethods2('binance.db')
+        self.server.conn.execute(
+            "PRAGMA journal_mode=WAL"
+        )
+        self.chk_server_status()
+        self.insert_signal()
+
+    def chk_server_status(self):
+        t = self.server.get_table_list()
+        if "stgyedr" not in t:
+            print(msg.STATUS_1, config.TABLENAME_EVENTDRIVEN)
+            self.server.create_table_w_pk(
+                table_name=config.TABLENAME_EVENTDRIVEN,
+                variables=config.TABLE_EVENTDRIVEN,
+                pk_loc=[0, 1, 2, 3, 5]
+            )
+
+        if "stgyres" not in t:
+            print(msg.STATUS_1, config.TABLENAME_ACCOUNT)
+            self.server.create_table_w_pk(
+                table_name=config.TABLENAME_ACCOUNT,
+                variables=config.TABLE_ACCOUNT,
+                pk_loc=[0, 1]
+            )
+        print(msg.STATUS_0, "ready")
+
+    def insert_signal(self):
+        upb = UpBitNews(database=self.server)
+        upb.run()
+
+
+class NightWatch:
+    def __init__(self):
+        # Insert Database
+        self.server = LocalDBMethods2('binance.db')
         ...
 
     @property
@@ -23,14 +61,10 @@ class BinanceTrade:
         pw = get_token('binance', 'secret_key')
         return {'apiKey': id, 'secret': pw}
 
-    def get_balance(self):
-        bal = self.binance.fetch_balance()
-        for i in bal['info']['balances']:
-            print(i)
-
     def send_order(self):
-        self.binance.create_limit_order()
+        binance = ccxt.binance(config=self.__login_info)
+        # binance.create_limit_order()
 
 
 if __name__ == '__main__':
-    b = BinanceTrade()
+    b = SigInsert()
