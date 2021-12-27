@@ -131,17 +131,22 @@ class LocalDBMethods2:
         qry = f'create table if not exists {table_name} ({new_cols})'
         self._execute_query(qry, False)
 
-    def create_table_w_pk(self, table_name: str, variables: dict, pk_loc:int):
+    def create_table_w_pk(self, table_name: str, variables: dict, pk_loc:Iterable):
+        """
+        If primary keys are located on 0, 1, 2 elements -> pk_loc = [0, 1, 2]
+        """
         # Column and serverconn types of columns is needed in dict
-        assert pk_loc - 1 < len(variables), 'pk_loc out side of variables index'
+        assert max(pk_loc) - 1 < len(variables), 'pk_loc out side of variables index'
 
-        pk = list(variables.keys())[pk_loc]
-        pk_val = variables[pk] + ' PRIMARY KEY'
-        variables[pk] = pk_val
+        pks = list()
+        for i in pk_loc:
+            assert 'not null'.upper() in list(variables.values())[i],  list(variables.keys())[i]
+            pks.append(list(variables.keys())[i])
 
+        pks = ', '.join(pks)
         new_cols = ', '.join(str(a) + ' ' + str(b)
                              for a, b in zip(variables.keys(), variables.values()))
-        qry = f'create table if not exists {table_name} ({new_cols})'
+        qry = f'create table if not exists {table_name} ({new_cols}, PRIMARY KEY ({pks}))'
         self._execute_query(qry, False)
 
     def _create_connection(self, db):
