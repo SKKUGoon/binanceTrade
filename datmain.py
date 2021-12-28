@@ -211,6 +211,8 @@ class NightWatch:
             amount=ams
         )
         self.__alert_order(order, asset)
+
+        time.sleep(60)
         return
 
 
