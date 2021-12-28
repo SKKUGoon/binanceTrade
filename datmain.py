@@ -76,8 +76,8 @@ class NightWatch:
         )
 
         # TEST
-        r = [('20211222', '130001', 'GTC', 'ico_event', 'long', 'upbit'),
-             ('20211222', '130001', 'OCEAN', 'ico_event', 'long', 'upbit')]
+        # r = [('20211222', '130001', 'GTC', 'ico_event', 'long', 'upbit'),
+        #      ('20211222', '130001', 'OCEAN', 'ico_event', 'long', 'upbit')]
 
         if len(r) == 0:
             print(msg.STATUS_3)
@@ -215,7 +215,11 @@ class NightWatch:
         time.sleep(60)
         return
 
+    def main(self):
+        while True:
+            self.monitor_signal()
+
 
 if __name__ == '__main__':
     nw = NightWatch()
-    nw.monitor_signal()
+    nw.main()
