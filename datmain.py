@@ -218,6 +218,7 @@ class NightWatch:
     def main(self):
         while True:
             self.monitor_signal()
+            time.sleep(1)
 
 
 if __name__ == '__main__':
