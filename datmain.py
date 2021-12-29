@@ -97,7 +97,7 @@ class NightWatch:
 
             trade = 0
             for a in assets:
-                if "{a}/USDT" not in self.marketinfo.keys():
+                if f"{a}/USDT" not in self.marketinfo.keys():
                     continue
                 trade += 1
                 t = threading.Thread(
