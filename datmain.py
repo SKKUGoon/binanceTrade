@@ -10,6 +10,7 @@ from datetime import datetime, timedelta
 import threading
 import json
 import time
+import math
 
 
 def get_token(target:str, typ:str, loc='key.json') -> str:
@@ -26,8 +27,8 @@ class NightWatch:
 
     # Trade Parameters
     orderfill_time = 5  # seconds
-    max_trade_time = 60  # seconds
-    satisfy = 0.2  # satisfying return
+    max_trade_time = 20  # seconds
+    satisfy = 0.15  # satisfying return
 
 
     def __init__(self):
@@ -38,8 +39,7 @@ class NightWatch:
         )
 
         # Initial State
-        self.deposit = self.get_deposit()
-        self.trade = False
+        self.restore_init()
 
     @property
     def __login_info(self) -> Dict:
@@ -76,8 +76,11 @@ class NightWatch:
         )
 
         # TEST
-        # r = [('20211222', '130001', 'GTC', 'ico_event', 'long', 'upbit'),
-        #      ('20211222', '130001', 'OCEAN', 'ico_event', 'long', 'upbit')]
+        # td = datetime.now()
+        # test_date = td.strftime('%Y%m%d')
+        # test_hour = td.strftime('%H%M%S')
+        # r = [(test_date, test_hour, 'TRX', 'ico_event', 'long', 'upbit'),
+        #      (test_date, test_hour, 'LUNA', 'ico_event', 'long', 'upbit')]
 
         if len(r) == 0:
             print(msg.STATUS_3)
@@ -88,15 +91,23 @@ class NightWatch:
 
             # Start Running Binance
             self.binance = ccxt.binance(config=self.__login_info)
+            self.marketinfo = self.binance.load_markets()
             self.trade = True
             avail = self.deposit * self.invest_ratio
 
+            trade = 0
             for a in assets:
+                if "{a}/USDT" not in self.marketinfo.keys():
+                    continue
+                trade += 1
                 t = threading.Thread(
                     target=self.exec_strat,
                     args=(a, avail)
                 )
                 t.start()
+            if trade == 0:  # All Asset Not Available in Binance
+                print(msg.ERROR_1)
+                self.trade = False
 
     @staticmethod
     def __alert_order(order, asset:str):
@@ -119,6 +130,12 @@ class NightWatch:
             msg.ORDERFILLPADDING
         ))
 
+    @staticmethod
+    def __decimal_round(val:float, decimal_:int) -> float:
+        p = int(math.floor(val * (10 ** decimal_)))
+        p = p / (10 ** decimal_)
+        return float(f'%.{decimal_}f'%(p))
+
     def exec_strat(self, asset:str, deposit:float) -> None:
         ####################################################################
         # Trade Thread Start
@@ -128,8 +145,15 @@ class NightWatch:
 
         ####################################################################
         # Calculate Price, Amount
+        rounddown = self.marketinfo[f'{asset}/USDT']['precision']
+        price_rd = rounddown['price']
+
         p = self.binance.fetch_ticker(f'{asset}/USDT')['close'] * self.order_markup
+        p = self.__decimal_round(p, price_rd)
+
         am = asset_avail / p
+        amount_rd = rounddown['amount']
+        am = self.__decimal_round(am, amount_rd)
 
         ####################################################################
         # Buy Order(LIMIT)
@@ -144,24 +168,24 @@ class NightWatch:
 
         ####################################################################
         # Check Orderfilled
-        ts_orderfill = time.time()
-        fill = 0
-        cost = None
-        while (time.time() - ts_orderfill) < self.orderfill_time:
-            print(f"{round(time.time() - ts_orderfill, 2)}sec passed'")
-            orderinfo = self.binance.fetch_order(
-                id=order['id'],
-                symbol=f"{asset}/USDT"
-            )
-            if orderinfo['filled'] > 0:
-                fill = 1  # Partial Fill
-                cost = orderinfo['price']
+        time.sleep(self.orderfill_time)
 
-            if orderinfo['filled'] >= 1:
-                fill = 2  # Full Order Fill
-                cost = orderinfo['price']
+        orderinfo = self.binance.fetch_order(
+            id=order['id'],
+            symbol=f"{asset}/USDT"
+        )
+        print(orderinfo)
+        if orderinfo['remaining'] >= am:
+            fill = 0  # Trade Unsuccessful
+            cost = None
 
-            time.sleep(0.5)
+        elif orderinfo['remaining'] > 0:
+            fill = 1  # Partial Fill
+            cost = orderinfo['price']
+
+        else:
+            fill = 2  # Full Order Fill
+            cost = orderinfo['price']
 
         ####################################################################
         # Orderfill Aftermath
@@ -173,6 +197,7 @@ class NightWatch:
             )
             self.__alert_cancel(cancel, asset)
             return
+
         elif fill == 1:
             print(msg.STATUS_6)
             cancel = self.binance.cancel_order(
@@ -185,24 +210,29 @@ class NightWatch:
 
         ####################################################################
         # Amount to Sell
-        ams = self.binance.fetch_balance()['asset']
+        ams = self.binance.fetch_balance()[asset]['free']
+        ams = self.__decimal_round(ams, amount_rd)
+        print(ams)
         assert cost is not None, "Manual Override"
 
         ####################################################################
         # Check Condition FullFill
         while True:
             te = time.time()
+            print(te - ts, 'sec')
 
             # Condition 1: Time Limit of 60 seconds
-            if (ts - te) >= self.max_trade_time:
+            if (te - ts) >= self.max_trade_time:
                 print(msg.EXIT_0)
                 break
 
             # Condition 2: Return Achieved
-            prc = self.binance.fetch_ticker(f'{asset}/USDT')
+            prc = self.binance.fetch_ticker(f'{asset}/USDT')['close']
+            print(prc, 'price')
             if (prc - cost) / cost > self.satisfy:
                 print(msg.EXIT_1)
                 break
+            time.sleep(0.25)
 
         ####################################################################
         # Sell(MARKET)
@@ -212,12 +242,20 @@ class NightWatch:
         )
         self.__alert_order(order, asset)
 
+        print(msg.STATUS_8)
         time.sleep(60)
+        # Return to Initial State
+        self.restore_init()
         return
+
+    def restore_init(self):
+        self.trade = False
+        self.deposit = self.get_deposit()
 
     def main(self):
         while True:
-            self.monitor_signal()
+            if self.trade is False:
+                self.monitor_signal()
             time.sleep(1)
 
 
