@@ -10,6 +10,7 @@ import requests
 
 
 class UpBitNews:
+    today = datetime.now()
     def __init__(self, database:LocalDBMethods2, test:bool=False,):
         self.url = "https://api-manager.upbit.com/api/v1/notices"
         self.db = database
@@ -58,19 +59,26 @@ class UpBitNews:
                         article['created_at'],
                         '%Y-%m-%dT%H:%M:%S%z'
                     )
+                    if date.strftime('%Y%m%d') < self.today.strftime('%Y%m%d'):
+                        print("Past information")
+                        continue
+                    print(k)
                     for coin in k:
                         row_ = (
                             date.strftime('%Y%m%d'), date.strftime('%H%M%S'),
                             coin, "ico_event", "long", "upbit"
                         )
                         db_row.append(row_)
-            self.db.insert_rows(
-                table_name=config.TABLENAME_EVENTDRIVEN,
-                col_=list(config.TABLE_EVENTDRIVEN.keys()),
-                rows_=db_row
-            )
+
+            for rows in db_row:
+                self.db.insert_rows(
+                    table_name=config.TABLENAME_EVENTDRIVEN,
+                    col_=list(config.TABLE_EVENTDRIVEN.keys()),
+                    rows_=[rows]
+                )
         except Exception as e:
             if "unique".upper() in str(e):
+                print(e)
                 print(msg.ERROR_0)
             else:
                 print('error', e)

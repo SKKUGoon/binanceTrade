@@ -21,8 +21,8 @@ def get_token(target:str, typ:str, loc='key.json') -> str:
 
 class NightWatch:
     # Before Trade
-    invest_ratio = 0.8
-    order_markup = 0.7
+    invest_ratio = 0.9
+    order_markup = 1.05
 
     # Trade Parameters
     orderfill_time = 5  # seconds
