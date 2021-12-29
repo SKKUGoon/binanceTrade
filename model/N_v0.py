@@ -22,6 +22,12 @@ class UpBitNews:
             res = res + _.split(' : ')[1].replace(' ', '').split(',')
         return res
 
+    def _get_coin(self, rows:dict) -> List:
+        obj = rows['title']
+        s, e = obj.index('(') + 1, obj.index(')')
+
+        return obj[s : e].replace(' ', '').split(',')
+
     def _get_article(self, news_id:int) -> (str, str):
         news = requests.get(f"{self.url}/{news_id}")
         news = news.json()
@@ -54,15 +60,13 @@ class UpBitNews:
             db_row = list()
             for article in news:
                 if ("거래" in article['title']) and ("추가" in article['title']):
-                    k = self._get_article(article['id'])
+                    k = self._get_coin(article)
                     date = datetime.strptime(
                         article['created_at'],
                         '%Y-%m-%dT%H:%M:%S%z'
                     )
                     if date.strftime('%Y%m%d') < self.today.strftime('%Y%m%d'):
-                        print("Past information")
                         continue
-                    print(k)
                     for coin in k:
                         row_ = (
                             date.strftime('%Y%m%d'), date.strftime('%H%M%S'),
@@ -78,7 +82,6 @@ class UpBitNews:
                 )
         except Exception as e:
             if "unique".upper() in str(e):
-                print(e)
                 print(msg.ERROR_0)
             else:
                 print('error', e)
@@ -93,4 +96,4 @@ class UpBitNews:
         else:
             while True:
                 self._get_news()
-                time.sleep(5)
+                time.sleep(1)
