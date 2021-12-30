@@ -66,6 +66,7 @@ class UpBitNews:
                         '%Y-%m-%dT%H:%M:%S%z'
                     )
                     if date.strftime('%Y%m%d') < self.today.strftime('%Y%m%d'):
+                        print(msg.ERROR_0)
                         continue
                     for coin in k:
                         row_ = (
