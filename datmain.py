@@ -26,7 +26,7 @@ class NightWatch:
     order_markup = 1.05
 
     # Trade Parameters
-    orderfill_time = 5  # seconds
+    orderfill_time = 2  # seconds
     max_trade_time = 20  # seconds
     satisfy = 0.15  # satisfying return
 
@@ -93,7 +93,7 @@ class NightWatch:
             self.binance = ccxt.binance(config=self.__login_info)
             self.marketinfo = self.binance.load_markets()
             self.trade = True
-            avail = self.deposit * self.invest_ratio
+            avail = (self.deposit * self.invest_ratio) / len(assets)
 
             trade = 0
             for a in assets:
@@ -140,7 +140,6 @@ class NightWatch:
         ####################################################################
         # Trade Thread Start
         tn = threading.currentThread().getName()
-        asset_avail = deposit / len(asset)
         print(msg.STATUS_4.format(asset, tn))
 
         ####################################################################
@@ -151,7 +150,7 @@ class NightWatch:
         p = self.binance.fetch_ticker(f'{asset}/USDT')['close'] * self.order_markup
         p = self.__decimal_round(p, price_rd)
 
-        am = asset_avail / p
+        am = deposit / p
         amount_rd = rounddown['amount']
         am = self.__decimal_round(am, amount_rd)
 
@@ -212,7 +211,6 @@ class NightWatch:
         # Amount to Sell
         ams = self.binance.fetch_balance()[asset]['free']
         ams = self.__decimal_round(ams, amount_rd)
-        print(ams)
         assert cost is not None, "Manual Override"
 
         ####################################################################
@@ -221,7 +219,7 @@ class NightWatch:
             te = time.time()
             print(te - ts, 'sec')
 
-            # Condition 1: Time Limit of 60 seconds
+            # Condition 1: Time Limit of 20 seconds
             if (te - ts) >= self.max_trade_time:
                 print(msg.EXIT_0)
                 break
