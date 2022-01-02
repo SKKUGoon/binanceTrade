@@ -64,7 +64,7 @@ class NightWatch:
         """
         t = datetime.now()
         d = t.strftime('%Y%m%d')
-        h1 = t - timedelta(seconds=threshold)
+        h1 = (t - timedelta(seconds=threshold)).strftime('%H%M%S')
 
         # Monitor Signal from the database
         condition = f"date = '{d}' and time >= '{h1}'"
