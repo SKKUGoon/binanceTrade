@@ -25,9 +25,11 @@ datf.date = datf.date.apply(lambda x: datetime.utcfromtimestamp(x).strftime('%Y%
 datf = datf.set_index('date')
 
 
-# ((dat.open - datf.open) / dat.open).plot(secondary_y=True)
-# ((dat.open - datf.open) / dat.open).rolling(window=5).mean().plot(secondary_y=True)
-# ((dat.open - datf.open) / dat.open).rolling(window=20).mean().plot(secondary_y=True)
+# Backwardation
+back = (datf.open - dat.open) / dat.open  # Positive -> Contango / Negative -> Backwardation
+
+back.plot(secondary_y=True)
+back.rolling(window=5).mean().plot(secondary_y=True)
 
 dat.open.plot()
 datf.open.plot()
