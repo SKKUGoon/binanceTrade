@@ -6,9 +6,9 @@ from datetime import datetime
 
 
 b = ccxt.binance()
-symbols = ['BTC/USDT']
+symbols = ['ETH/USDT']
 
-dat = b.fetch_ohlcv(symbols[0], '1h')
+dat = b.fetch_ohlcv(symbols[0], '1m')
 dat = pd.DataFrame(dat, columns=['date', 'open', 'high', 'low', 'close', 'vol'])
 dat.date = dat.date // 1000
 
@@ -17,7 +17,7 @@ dat = dat.set_index('date')
 
 f = ccxt.binance({'options': {'defaultType': 'future'}})
 m = f.load_markets()
-datf = f.fetch_ohlcv(symbols[0], '1h')
+datf = f.fetch_ohlcv(symbols[0], '1m')
 datf = pd.DataFrame(datf, columns=['date', 'open', 'high', 'low', 'close', 'vol'])
 datf.date = datf.date // 1000
 
@@ -26,11 +26,11 @@ datf = datf.set_index('date')
 
 
 # Backwardation
-back = (datf.open - dat.open) / dat.open  # Positive -> Contango / Negative -> Backwardation
-
+back = (dat.open - datf.open) / datf.open  # Positive -> Contango / Negative -> Backwardation
 back.plot(secondary_y=True)
-back.rolling(window=5).mean().plot(secondary_y=True)
+(back.rolling(window=20).mean() + (2 * back.rolling(window=20).std())).plot(secondary_y=True)
+(back.rolling(window=20).mean() - (2 * back.rolling(window=20).std())).plot(secondary_y=True)
 
-dat.open.plot()
+# datf.open.rolling(window=10).std().plot(secondary_y=True)
 datf.open.plot()
 plt.show()
