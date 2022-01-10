@@ -32,7 +32,7 @@ class BinanceLiveStream:
         else:
             pass
 
-    def report_swap(self, msg):
+    def report_swap(self, msg, calc:int=20):
         """
         :param msg:
         :return:
@@ -40,9 +40,17 @@ class BinanceLiveStream:
         try:
             spread = (float(msg['k']['c']) - self.spot_close) / self.spot_close
             print('swap - spot', spread)
-            self.q_spread.put(
-                spread
-            )
+            if len(self.q_spread) == calc:
+
+                self.q_spread.put(
+                    spread
+                )
+            else:
+                self.q_spread.put(
+                    spread
+                )
+
+
         except Exception as e:
             print(e)
             pass
@@ -52,11 +60,14 @@ class BinanceLiveStream:
         pass
 
     def report_spot_tick(self, msg):
-        # print('spot tick', msg)
-        pass
+        best_bid = msg['b']
+        best_ask = msg['a']
+        print('spot', best_bid, best_ask)
 
     def report_swap_tick(self, msg):
-        # print('swap tick', msg)
+        best_bid = msg['data']['b']
+        best_ask = msg['data']['a']
+        print('swap', best_bid, best_ask)
         pass
 
     def main(self, symbol:str):
