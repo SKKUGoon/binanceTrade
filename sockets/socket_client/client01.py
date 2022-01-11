@@ -104,4 +104,6 @@ class UpbitNews:
 
 if __name__ == '__main__':
     ub = UpbitNews()
-    ub.run()
+    for i in range(5):
+        ub.run()
+        time.sleep(5)
