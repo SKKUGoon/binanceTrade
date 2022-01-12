@@ -1,3 +1,6 @@
+from settings import wssmsg as wssmsgs
+from settings import sysmsg as sysmsgs
+
 import websockets
 import asyncio
 import json
@@ -6,50 +9,61 @@ PORT = 7890
 
 print(f"Server listening on port: {PORT}")
 
-connected = set()
+backoffice = set()
+middleoffice = set()
+frontoffice = set()
 
 async def echo(websocket, path):
-    print("Client Just Connected")
-    connected.add(websocket)
+    print(sysmsgs.BROADCAST_TOTL_SIG0)
     try:
         async for message in websocket:
-            print(f"Received message from client {message}")
+            print(f"[WS] {message}")
             m = json.loads(message)
 
-            # CONNECTION TEST SIGNALS
-            if m['signal_type'] == 'conn':
-                print("[WS] Received connection test message")
-                payload = {
-                    'signal_type': 'conn_resp',
-                    'data': {
-                        'status': 'normal',
-                        'msg': 'connection_normal'
-                    }
-                }
-                payload_j = json.dumps(payload)
-                await websocket.send(payload_j)
+            if m['signal_type'] == 'init':
+                department = m['data']['dep']
+                if department == 'back':
+                    print("[WS] BackOffice has +1 Client")
+                    backoffice.add(websocket)
+                elif department == 'midl':
+                    print("[WS] MiddleOffice has +1 Client")
+                    middleoffice.add(websocket)
+                else:
+                    print("[WS] FrontOffice has +1 Client")
+                    frontoffice.add(websocket)
 
-            # TESTING SIGNALS
+            # CONNECTION TEST SIGNALS
+            elif m['signal_type'] == 'conn':
+                print(sysmsgs.BROADCAST_BACK_SIG0)
+                payload = json.dumps(wssmsgs.back_conn_resp)
+                for backs in backoffice:
+                    await backs.send(payload)
+
+            # TRADE SIGNALS
             elif m['signal_type'] == 'trade':
-                print("[WS] Received trade messages")
-                payload = {
-                    'signal_type': 'trade_resp',
-                    'data': {
-                        'status': 'recieved',
-                        'msg': 'successfully recieved'
-                    }
-                }
-                payload_j = json.dumps(payload)
-                await websocket.send(payload_j)
+                print(sysmsgs.BROADCAST_MIDD_SIG0)
+                payload = json.dumps(wssmsgs.midl_trde_resp)
+                await websocket.send(payload)
+
+                for back in backoffice:
+                    await back.send(message)
+
+                for middle in middleoffice:
+                    await middle.send(payload)
+
+                for front in frontoffice:
+                    await front.send(message)
+
             else:
                 await websocket.send("m")
 
     except Exception as e:
         print(e)
-        print("A client just disconnected")
+        print(sysmsgs.BROADCAST_TOTL_SIG1)
 
     finally:
-        connected.remove(websocket)
+        # connected.remove(websocket)
+        ...
 
 
 start_server = websockets.serve(echo, "localhost", PORT)
