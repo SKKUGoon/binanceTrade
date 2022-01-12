@@ -19,3 +19,11 @@ ORDERFILL = "{}\nORDER INFO\n[{}]\nOrderID: {}\nQuantity: {}\nPrice: {}\nUsed: {
 ORDERFILLPADDING = "================"
 
 ORDERCANCEL = "{}\nORDER INFO\n[{}]\nOrderID: {}\nCancelled Successfully\n{}"
+
+BROADCAST_TOTL_SIG0 = "[WS] Client Just Connected"
+BROADCAST_TOTL_SIG1 = "[WS] A client just disconnected"
+
+BROADCAST_BACK_SIG0 = "[WS] Received connection message from back office"
+
+BROADCAST_MIDD_SIG0 = "[WS] Received trade messages from middle office"
+
