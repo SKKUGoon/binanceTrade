@@ -1,7 +1,4 @@
-from dbms.Ddbms import LocalDBMethods2
-import settings.table as config
-import settings.sysmsg as msg
-
+from settings import wssmsg as wssmsgs
 from datetime import datetime
 from typing import List
 import websockets
@@ -10,6 +7,14 @@ import requests
 import time
 import json
 
+
+# MIDDLE OFFICE CLIENT
+# NAME:
+# UPBIT_NEWS_CRAWLER
+# OBJECTIVE:
+# GATHER COIN ICO FROM UPBIT
+# BY CONSISTANTLY PINGING IT
+# FREQ: SECS
 
 async def ping(symbol:str, mir:float, mim:int, om:str, os:str, ot:int,
                mtt:int, sf:float, strnm:str):
@@ -28,6 +33,11 @@ async def ping(symbol:str, mir:float, mim:int, om:str, os:str, ot:int,
     url = "ws://127.0.0.1:7890"
 
     async with websockets.connect(url) as ws:
+        cover = wssmsgs.midl_conn_init
+        await ws.send(
+            json.dumps(cover)
+        )
+
         payload = {
             'signal_type': 'trade',
             'data':{
@@ -70,7 +80,11 @@ class UpbitNews:
         r = r.json()
 
         news = r['data']['list']
+
+        # Initialize
         self.od = list()
+
+        # Search Process
         for article in news:
             if ("거래" in article['title']) and ("추가" in article['title']):
                 k = self._get_coin(article)
@@ -104,6 +118,6 @@ class UpbitNews:
 
 if __name__ == '__main__':
     ub = UpbitNews()
-    for i in range(5):
-        ub.run()
-        time.sleep(5)
+    # for i in range(5):
+    #     ub.run()
+    #     time.sleep(5)
