@@ -1,5 +1,5 @@
 import settings.table as config
-import settings.sysmsg as msg
+import settings.sysmsg_dep as msg
 from dbms.Ddbms import LocalDBMethods2
 from model.N_v0 import UpBitNews
 

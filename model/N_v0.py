@@ -1,6 +1,6 @@
 from dbms.Ddbms import LocalDBMethods2
 import settings.table as config
-import settings.sysmsg as msg
+import settings.sysmsg_dep as msg
 
 from datetime import datetime
 from typing import List
