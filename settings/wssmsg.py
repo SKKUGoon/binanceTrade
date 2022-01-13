@@ -15,6 +15,14 @@ back_data_init = {
     }
 }
 
+back_test_init = {
+    'signal_type': 'init',
+    'data': {
+        'dep': 'back',
+        'dep_sep': 'test'
+    }
+}
+
 midl_conn_init = {
     'signal_type': 'init',
     'data': {
@@ -47,6 +55,15 @@ back_data_resp = {
     'data': {
         'status': 'normal',
         'msg': 'database_normal'
+    }
+}
+
+# TEST ORDER RESPONSE
+back_test_resp = {
+    'signal_type': 'test_resp',
+    'data': {
+        'status': 'normal',
+        'msg': 'trade_test_normal'
     }
 }
 
