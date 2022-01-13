@@ -111,7 +111,7 @@ class BinanceTrader:
             print("[BinanceTrader] Coin not traded in Binance")
             return
 
-        print(f"[BinanceTrade] Execute {strat_name} for {symbol} on {threading.currentThread().getName()}")
+        print(f"[BinanceTrader] Execute {strat_name} for {symbol} on {threading.currentThread().getName()}")
 
         money_invest = self._get_trading_vol(
             mir=max_invest_ratio,
