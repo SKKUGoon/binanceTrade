@@ -23,34 +23,39 @@ async def echo(websocket, path):
             if m['signal_type'] == 'init':
                 department = m['data']['dep']
                 if department == 'back':
-                    print("[WS] BackOffice has +1 Client")
+                    print(sysmsgs.BROADCAST_BACK_SIG0)
                     backoffice.add(websocket)
                 elif department == 'midl':
-                    print("[WS] MiddleOffice has +1 Client")
+                    print(sysmsgs.BROADCAST_MIDD_SIG0)
                     middleoffice.add(websocket)
                 else:
-                    print("[WS] FrontOffice has +1 Client")
+                    print(sysmsgs.BROADCAST_FRNT_SIG0)
                     frontoffice.add(websocket)
 
             # CONNECTION TEST SIGNALS
             elif m['signal_type'] == 'conn':
-                print(sysmsgs.BROADCAST_BACK_SIG0)
+                print(sysmsgs.BROADCAST_BACK_SIG2)
                 payload = json.dumps(wssmsgs.back_conn_resp)
                 for backs in backoffice:
                     await backs.send(payload)
 
             # TRADE SIGNALS
             elif m['signal_type'] == 'trade':
-                print(sysmsgs.BROADCAST_MIDD_SIG0)
+                print(sysmsgs.BROADCAST_MIDD_SIG2)
                 payload = json.dumps(wssmsgs.midl_trde_resp)
                 await websocket.send(payload)
-
                 for back in backoffice:
                     await back.send(message)
-
                 for middle in middleoffice:
                     await middle.send(payload)
+                for front in frontoffice:
+                    await front.send(message)
 
+            elif m['signal_type'] == 'test_trade':
+                print(sysmsgs.BROADCAST_BACK_SIG3)
+                payload = json.dumps(wssmsgs.back_test_resp)
+                for back in backoffice:
+                    await back.send(payload)
                 for front in frontoffice:
                     await front.send(message)
 
@@ -62,8 +67,15 @@ async def echo(websocket, path):
         print(sysmsgs.BROADCAST_TOTL_SIG1)
 
     finally:
-        # connected.remove(websocket)
-        ...
+        if websocket in backoffice:
+            backoffice.remove(websocket)
+            print(sysmsgs.BROADCAST_BACK_SIG1)
+        elif websocket in middleoffice:
+            middleoffice.remove(websocket)
+            print(sysmsgs.BROADCAST_MIDD_SIG1)
+        else:
+            frontoffice.remove(websocket)
+            print(sysmsgs.BROADCAST_FRNT_SIG1)
 
 
 start_server = websockets.serve(echo, "localhost", PORT)
