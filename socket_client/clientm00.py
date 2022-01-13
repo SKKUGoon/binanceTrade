@@ -16,9 +16,11 @@ import json
 # BY CONSISTANTLY PINGING IT
 # FREQ: SECS
 
-async def ping(symbol:str, mir:float, mim:int, om:str, os:str, ot:int,
+async def ping(date:str, trader:str, symbol:str, mir:float, mim:int, om:str, os:str, ot:int,
                mtt:int, sf:float, strnm:str):
     """
+    :param date: ping date
+    :param trader: trading platform in {'binance'}
     :param symbol: ticker name of the asset
     :param mir: maximum investable ratio in float
     :param mim: maximum investable money in integer
@@ -40,6 +42,8 @@ async def ping(symbol:str, mir:float, mim:int, om:str, os:str, ot:int,
 
         payload = {
             'signal_type': 'trade',
+            'date': date,
+            'trader': trader,
             'data':{
                 'strat_name': strnm,
                 'symbol': symbol,
@@ -75,7 +79,7 @@ class UpbitNews:
         s, e = obj.index('(') + 1, obj.index(')')
         return obj[s : e].replace(' ', '').split(',')
 
-    def _get_news(self, rptfmt='%Y%m%d'):
+    def _get_news(self, rptfmt='D%Y%m%dT%H:%M:%S'):
         r = requests.get(self.url)
         r = r.json()
 
@@ -95,9 +99,11 @@ class UpbitNews:
                 for coin in k:
                     k = {
                         "strnm": "upbit_ico_strat",
+                        "date": self.today.strftime(rptfmt),
+                        "trader": None,
                         "symbol": coin,
                         "mir": 0.1,
-                        "mim": 100000,
+                        "mim": 100,  # Dollars
                         "om": "limit",
                         "os": None,
                         "ot": 2,
@@ -118,6 +124,4 @@ class UpbitNews:
 
 if __name__ == '__main__':
     ub = UpbitNews()
-    # for i in range(5):
-    #     ub.run()
-    #     time.sleep(5)
+    ub.run()

@@ -1,3 +1,4 @@
+from dbms.Ddbms import LocalDBMethods2
 from settings import wssmsg as wssmsgs
 import websockets
 import asyncio
@@ -13,7 +14,7 @@ import json
 # BY CONSISTANTLY PINGING IT
 # FREQ: 5SECS
 
-async def listen():
+async def listen(server:LocalDBMethods2):
     url = "ws://127.0.0.1:7890"
     async with websockets.connect(url) as ws:
         cover = wssmsgs.back_conn_init
@@ -29,6 +30,7 @@ async def listen():
                 pass
 
 
-asyncio.get_event_loop().run_until_complete(listen())
+db = LocalDBMethods2('TDB.db')
+asyncio.get_event_loop().run_until_complete(listen(db))
 
 
