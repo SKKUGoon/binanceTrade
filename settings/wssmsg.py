@@ -75,3 +75,12 @@ midl_trde_resp = {
         'msg': 'successfully recieved'
     }
 }
+
+# FRONTOFFICE RESPONSE
+frnt_trde_resp = {
+    'signal_type': 'trade_resp',
+    'data': {
+        'status': 'executed',
+        'msg': 'successfully executed.'
+    }
+}
