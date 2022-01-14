@@ -102,7 +102,7 @@ class UpbitNews:
                         "date": self.today.strftime(rptfmt),
                         "trader": None,
                         "symbol": coin,
-                        "mir": 0.1,
+                        "mir": 0.2,
                         "mim": 100,  # Dollars
                         "om": "limit",
                         "os": None,
