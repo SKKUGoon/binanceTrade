@@ -17,7 +17,6 @@ async def echo(websocket, path):
     print(sysmsgs.BROADCAST_TOTL_SIG0)
     try:
         async for message in websocket:
-            print(f"[WS] {message}")
             m = json.loads(message)
 
             if m['signal_type'] == 'init':
