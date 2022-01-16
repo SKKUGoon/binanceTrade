@@ -29,6 +29,7 @@ async def listen(rptfmt='D%Y%m%dT%H:%M:%S'):
             'signal_type': 'test_trade',
             'date': date,
             'trader': 'binance',
+            'asset_type': 'spot',
             'data':{
                 'strat_name': 'test_ico_strat',
                 'symbol': 'LUNA',

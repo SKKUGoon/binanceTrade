@@ -16,7 +16,7 @@ import json
 # BY CONSISTANTLY PINGING IT
 # FREQ: SECS
 
-async def ping(date:str, trader:str, symbol:str, mir:float, mim:int, om:str, os:str, ot:int,
+async def ping(date:str, trader:str, symbol:str, asset_typ:str, mir:float, mim:int, om:str, os:str, ot:int,
                mtt:int, sf:float, strnm:str):
     """
     :param date: ping date
@@ -44,6 +44,7 @@ async def ping(date:str, trader:str, symbol:str, mir:float, mim:int, om:str, os:
             'signal_type': 'trade',
             'date': date,
             'trader': trader,
+            'asset_type': asset_typ,  # spot
             'data':{
                 'strat_name': strnm,
                 'symbol': symbol,
@@ -101,6 +102,7 @@ class UpbitNews:
                         "strnm": "upbit_ico_strat",
                         "date": self.today.strftime(rptfmt),
                         "trader": None,
+                        "asset_typ": 'spot',
                         "symbol": coin,
                         "mir": 0.2,
                         "mim": 100,  # Dollars
