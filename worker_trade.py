@@ -7,7 +7,7 @@ import time
 import math
 
 
-def get_token(target:str, typ:str, loc='../key.json') -> str:
+def get_token(target:str, typ:str, loc='key.json') -> str:
     with open(loc, 'r') as file:
         dat = json.load(file)
     file.close()
@@ -165,7 +165,6 @@ class BinanceTrader:
                 symbol=f"{symbol}/USDT",
                 amount=v
             )
-
 
 
 if __name__ == '__main__':
