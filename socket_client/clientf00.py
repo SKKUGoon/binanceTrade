@@ -7,7 +7,7 @@ import threading
 import json
 
 
-# FRON OFFICE CLIENT
+# FRONT OFFICE CLIENT
 # NAME:
 # DATABASE_INSERTION
 # OBJECTIVE:
