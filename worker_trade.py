@@ -5,9 +5,10 @@ import ccxt
 import json
 import time
 import math
+import os
 
-
-def get_token(target:str, typ:str, loc='key.json') -> str:
+def get_token(target:str, typ:str, loc='..\key.json') -> str:
+    p = os.path.abspath('key.json')
     with open(loc, 'r') as file:
         dat = json.load(file)
     file.close()
