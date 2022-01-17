@@ -35,8 +35,7 @@ async def listen():
                 t.start()
             elif m['signal_type'] == 'test_trade':
                 btrade.binance.set_sandbox_mode(True)
-                t = threading.Thread(name='Binance Trader Test',
-                                     target=btrade.process_order,
+                t = threading.Thread(target=btrade.process_order,
                                      kwargs=m['data'])
                 t.start()
                 btrade.binance.set_sandbox_mode(False)
