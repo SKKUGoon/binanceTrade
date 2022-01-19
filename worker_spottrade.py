@@ -7,6 +7,7 @@ import time
 import math
 import os
 
+
 def get_token(target:str, typ:str, loc='..\key.json') -> str:
     p = os.path.abspath('key.json')
     with open(loc, 'r') as file:
@@ -48,7 +49,7 @@ class BinanceTrader:
     def _get_trading_vol(self, mir:float, mim:int) -> float:
         return min(self.balance * mir, mim)
 
-    def _get_trading_info(self, symbol, using:float) -> (float, float):
+    def _get_trading_info(self, symbol:str, using:float) -> (float, float):
 
         rounddown = self.marketinfo[f'{symbol}/USDT']['precision']
         price_pre, amount_pre = rounddown['price'], rounddown['amount']

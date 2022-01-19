@@ -78,7 +78,6 @@ class BinanceLiveStream:
                 self.spld.append(spread_spld)
                 self.plsd.append(spread_plsd)
 
-
                 if len(self.spld) > 20:
                     self.spld_l, self.spld_u = self.bollinger_band(self.spld)
                     self.spld.popleft()
@@ -88,7 +87,6 @@ class BinanceLiveStream:
                     self.plsd.popleft()
 
                 self.time = time.time()
-
 
     def report_deli_tick(self, msg):
         best_bid = float(msg['data']['b'])

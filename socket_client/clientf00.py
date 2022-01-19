@@ -1,5 +1,5 @@
 from settings import wssmsg as wssmsgs
-from worker_trade import BinanceTrader
+from worker_spottrade import BinanceTrader
 import websockets
 import asyncio
 import time
@@ -14,7 +14,6 @@ import json
 # CHECK WHETHER BROADCASTER IS WORKING
 # BY CONSISTANTLY PINGING IT
 # FREQ: 5SECS
-
 
 async def listen():
     btrade = BinanceTrader()
