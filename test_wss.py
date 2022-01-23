@@ -18,15 +18,17 @@ def get_token(target:str, typ:str, loc='key.json') -> str:
 
 
 class BinanceLiveStream:
-    def __init__(self, ):
+    def __init__(self, tick_equidistant:int=2, tick_collect:int=5):
         self.id = get_token('binance_live', 'access_key')
         self.pw = get_token('binance_live', 'secret_key')
 
         self.spot_close = 'init'
-        self.spld, self.plsd = deque(), deque()
+        self.spld, self.lpsd = deque(), deque()
         self.spld_l, self.spld_u, self.plsd_l, self.plsd_u = (
             None, None, None, None
         )
+        self.equidist = tick_equidistant
+        self.equimin = tick_collect
 
         # Tick Spread Calc Init
         self.deli_bid, self.deli_ask = None, None
@@ -35,7 +37,7 @@ class BinanceLiveStream:
         # Band Calc Init
         self.time = time.time()
 
-    def bollinger_band(self, obj:Iterable, apart:float=2.0) -> (float, float):
+    def bollinger_band(self, obj:Iterable, apart:float=3.0) -> (float, float):
         m = np.mean(obj)
         s = np.std(obj)
         return (m - apart * s, m + apart * s)
@@ -65,27 +67,40 @@ class BinanceLiveStream:
                 print("deli", self.deli_bid, self.deli_ask)
                 if self.spld_l > spread_spld:
                     print('spld signal')
+                    ...
             if self.plsd_l is not None:
                 if self.plsd_u < spread_plsd:
-                    print('plsd signal')
+                    # print('lpsd signal')
+                    ...
 
             # Queue Process
             if len(self.spld) == 0:
                 self.spld.append(spread_spld)
-            if len(self.plsd) == 0:
-                self.plsd.append(spread_plsd)
+            if len(self.lpsd) == 0:
+                self.lpsd.append(spread_plsd)
 
-            if time.time() - self.time >= 2:
+            if time.time() - self.time >= self.equidist:
+                # Append spread every 2 seconds
                 self.spld.append(spread_spld)
-                self.plsd.append(spread_plsd)
+                self.lpsd.append(spread_plsd)
 
-                if len(self.spld) > 20:
+                # Short Perp Long Delivery
+                if len(self.spld) > (60 / self.equidist) * self.equimin:
                     self.spld_l, self.spld_u = self.bollinger_band(self.spld)
                     self.spld.popleft()
+                else:
+                    print(
+                        f"Collecting data {len(self.spld)}/{(60 / self.equidist) * self.equimin}"
+                    )
 
-                if len(self.plsd) > 20:
-                    self.plsd_l, self.plsd_u = self.bollinger_band(self.plsd)
-                    self.plsd.popleft()
+                # Long Perp Short Delivery
+                if len(self.lpsd) > (60 / self.equidist) * self.equimin:
+                    self.plsd_l, self.plsd_u = self.bollinger_band(self.lpsd)
+                    self.lpsd.popleft()
+                else:
+                    print(
+                        f"Collecting data {len(self.lpsd)}/{(60 / self.equidist) * self.equimin}"
+                    )
 
                 self.time = time.time()
 
@@ -123,7 +138,7 @@ class BinanceLiveStream:
         twm_kline.start()
         twm_tick.start()
 
-        # TICKER
+        # ORDER BOOK
         expr_month = self.get_future_expr()
         twm_tick.start_symbol_ticker_futures_socket(
             callback=self.report_perp_tick,

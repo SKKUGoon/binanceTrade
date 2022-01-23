@@ -94,9 +94,8 @@ class UpbitNews:
             if ("거래" in article['title']) and ("추가" in article['title']):
                 k = self._get_coin(article)
                 date = datetime.strptime(article['created_at'], '%Y-%m-%dT%H:%M:%S%z')
-                # if date.strftime(rptfmt) < self.today.strftime(rptfmt):
-                #     print(msg.ERROR_0)
-                #     continue
+                if date.strftime(rptfmt) < self.today.strftime(rptfmt):
+                    continue
                 for coin in k:
                     k = {
                         "strnm": "upbit_ico_strat",
@@ -118,6 +117,8 @@ class UpbitNews:
 
     def run(self):
         self._get_news()
+        if len(self.od) == 0:
+            print(datetime.now().strftime('%H%M%S'), 'No New info')
         for orders in self.od:
             asyncio.get_event_loop().run_until_complete(
                 ping(**orders)
@@ -126,4 +127,6 @@ class UpbitNews:
 
 if __name__ == '__main__':
     ub = UpbitNews()
-    ub.run()
+    while True:
+        ub.run()
+        time.sleep(0.2)
