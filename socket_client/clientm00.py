@@ -80,7 +80,7 @@ class UpbitNews:
         s, e = obj.index('(') + 1, obj.index(')')
         return obj[s : e].replace(' ', '').split(',')
 
-    def _get_news(self, rptfmt='D%Y%m%dT%H:%M:%S'):
+    def _get_news(self, rptfmt:str='D%Y%m%dT%H:%M:%S'):
         r = requests.get(self.url)
         r = r.json()
 
@@ -118,7 +118,7 @@ class UpbitNews:
     def run(self):
         self._get_news()
         if len(self.od) == 0:
-            print(datetime.now().strftime('%H%M%S'), 'No New info')
+            print(datetime.now().strftime('%H%M%S'), '[Upbit] No New info')
         for orders in self.od:
             asyncio.get_event_loop().run_until_complete(
                 ping(**orders)
@@ -129,4 +129,4 @@ if __name__ == '__main__':
     ub = UpbitNews()
     while True:
         ub.run()
-        time.sleep(0.2)
+        time.sleep(0.25)

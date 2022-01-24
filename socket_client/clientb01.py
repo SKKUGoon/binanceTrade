@@ -10,8 +10,7 @@ import json
 # NAME:
 # DATABASE_INSERTION
 # OBJECTIVE:
-# CHECK WHETHER BROADCASTER IS WORKING
-# BY CONSISTANTLY PINGING IT
+# Get Messages and Record it in Database
 # FREQ: 5SECS
 
 async def listen(server:LocalDBMethods2):
