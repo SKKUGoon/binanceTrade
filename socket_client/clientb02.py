@@ -31,7 +31,7 @@ async def listen(rptfmt='D%Y%m%dT%H:%M:%S'):
             'asset_type': 'spot',
             'data':{
                 'strat_name': 'test_ico_strat',
-                'symbol': 'LUNA',
+                'symbol': 'BTC',
                 'max_invest_ratio': 0.1,
                 'max_invest_money': 100,
                 'order_method': 'limit',

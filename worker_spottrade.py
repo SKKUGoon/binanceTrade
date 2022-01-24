@@ -132,6 +132,7 @@ class BinanceTrader:
                 amount=v,
                 price=p
             )
+            print(order)
             ################### WAIT ###################
             time.sleep(orderfill_time)
             # CHECK ORDERFILLED
@@ -160,6 +161,7 @@ class BinanceTrader:
                 symbol=f'{symbol}/USDT',
                 amount=vs
             )
+            print(order)
             return
 
         elif order_method == 'market':
