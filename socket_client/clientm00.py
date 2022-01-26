@@ -1,5 +1,5 @@
 from settings import wssmsg as wssmsgs
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import List
 import websockets
 import asyncio
@@ -94,7 +94,8 @@ class UpbitNews:
             if ("거래" in article['title']) and ("추가" in article['title']):
                 k = self._get_coin(article)
                 date = datetime.strptime(article['created_at'], '%Y-%m-%dT%H:%M:%S%z')
-                if date.strftime(rptfmt) < self.today.strftime(rptfmt):
+                today = datetime.now() - timedelta(seconds=30)
+                if date.strftime(rptfmt) < today.strftime(rptfmt):
                     continue
                 for coin in k:
                     k = {
@@ -123,6 +124,9 @@ class UpbitNews:
             asyncio.get_event_loop().run_until_complete(
                 ping(**orders)
             )
+            print(datetime.now().strftime('%H%M%S'), '[Upbit] Order Sent. Sleep for 60sec')
+            time.sleep(60)
+
 
 
 if __name__ == '__main__':

@@ -1,5 +1,5 @@
 from settings import wssmsg as wssmsgs
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import List
 from html.parser import HTMLParser
 import websockets
@@ -95,7 +95,7 @@ class BitthumbNews:
     def __init__(self):
         self.url = "https://cafe.bithumb.com/view/boards/43"
         self.header = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
-        self.parser = MyHTMLParser()
+
 
     @staticmethod
     def is_english(val:str) -> bool:
@@ -118,17 +118,25 @@ class BitthumbNews:
         r.close()
         return res
 
-    def get_news(self) -> None:
+    def get_news(self, dfmt:str='%H:%M') -> None:
         c = self._get_news()
-        self.parser.feed(c)
+        parser = MyHTMLParser()
+        parser.feed(c)
         num, title, date = 1, 4, 7
 
         self.bitthumb_news = list()
-        for r in self.parser._bag[1:]:
+        for r in parser._bag[1:]:
             cond1 = r[title][:8] == "[상장/이벤트]"
             cond2 = r[title][:4] == "[상장]"
             if cond1 or cond2:
                 if ':' in r[date]:
+                    # Information for today
+                    cur = (datetime.now() - timedelta(minutes=2)).strftime(dfmt)
+                    if cur > r[date]:
+                        # Past Information (more than 2 minutes old)
+                        continue
+
+                    # Current Information
                     if "마켓" in r[title]:  # '마켓상장', '마켓추가'
                         msg = r[title][8:]
 
@@ -167,12 +175,18 @@ class BitthumbNews:
     def run(self):
         self.get_news()
         coins = list(map(self.mkorder, self.bitthumb_news))
+        ordersend = False  # Default State
         if len(coins) == 0:
             print(datetime.now().strftime('%H%M%S'), '[Bitthumb] No New info')
-        for order in coins:
-            asyncio.get_event_loop().run_until_complete(
-                ping(**order)
-            )
+        else:
+            ordersend = True
+            for order in coins:
+                asyncio.get_event_loop().run_until_complete(
+                    ping(**order)
+                )
+        if ordersend is True:
+            print(datetime.now().strftime('%H%M%S'), "[Bitthumb] Order Sent. Sleep 140sec")
+            time.sleep(70 * 2)
 
 if __name__ == '__main__':
     bn = BitthumbNews()
