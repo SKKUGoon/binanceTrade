@@ -13,7 +13,7 @@ backoffice = set()
 middleoffice = set()
 frontoffice = set()
 
-async def echo(websocket, path):
+async def echo(websocket):
     print(sysmsgs.BROADCAST_TOTL_SIG0)
     try:
         async for message in websocket:
