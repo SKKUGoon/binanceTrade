@@ -15,8 +15,8 @@ import json
 import time
 
 
-async def ping(date:str, trader:str, symbol:str, asset_typ:str, mir:float, mim:int, om:str, os:str, ot:int,
-               mtt:int, sf:float, strnm:str):
+async def ping(date:str, trader:str, signal:bool, symbol_l:str, symbol_s:str, asset_typ:str, mir:float, mim:int, om:str, os:str, ot:int,
+               mtt:int, sf:float, lc:float, strnm:str):
     """
     :param date: ping date
     :param trader: trading platform in {'binance'}
@@ -29,6 +29,7 @@ async def ping(date:str, trader:str, symbol:str, asset_typ:str, mir:float, mim:i
     :param mtt: maximum trading time(seconds) in integer
     :param sf: satisfactory return to drawdown.
     :param strnm: strategy name
+    :param lc: loss cut
     :return:
     """
     url = "ws://127.0.0.1:7890"
@@ -40,20 +41,23 @@ async def ping(date:str, trader:str, symbol:str, asset_typ:str, mir:float, mim:i
         )
 
         payload = {
-            'signal_type': 'test_trade',
+            'signal_type': 'spread_trade',
             'date': date,
             'trader': trader,
             'asset_type': asset_typ,  # spot
             'data':{
                 'strat_name': strnm,
-                'symbol': symbol,
+                'long_or_short': signal,
+                'symbol_long': symbol_l,
+                'symbol_short': symbol_s,
                 'max_invest_ratio': mir,
                 'max_invest_money': mim,
                 'order_method': om,  # limit, market
                 'order_slice': os,
                 'orderfill_time': ot,  # seconds
                 'max_trade_time': mtt,
-                'satisfactory': sf
+                'satisfactory': sf,
+                'loss_cut': lc,
             }
         }
         payload_j = json.dumps(payload)
@@ -85,6 +89,10 @@ class BinanceLiveStream:
         self.BAND_WIDTH = abn_band
         self.BAND_TARGET = abn_stop
 
+        ## PING
+        self.loop1 = asyncio.get_event_loop()
+        self.loop2 = asyncio.get_event_loop()
+
         # MUTABLE VARIABLE
         self.spld, self.lpsd = deque(), deque()
         self.spld_l, self.spld_u, self.spld_tgt, self.spld_tgt_loc = (
@@ -99,6 +107,7 @@ class BinanceLiveStream:
 
         # TIME
         self.time = time.time()
+
 
     @staticmethod
     def bollinger_band(obj:Iterable, apart:float, ending:float) -> (float, float, float):
@@ -162,12 +171,35 @@ class BinanceLiveStream:
         self.spld_sig = True
         self.spld_tgt_loc = self.spld_tgt  # Object Copy
 
-        # REPORT SIGNAL
+        # SEND SIGNAL TO BROADCASTER
         dt = datetime.datetime.now().strftime('%H%M%S')
+        order = {
+            'date': dt,
+            'trader': None,
+            'signal': True,
+            'symbol_l': self.long_symbol,
+            'symbol_s': self.short_symbol,
+            'asset_typ': 'spread',
+            'mir': 0.2,
+            'mim': 100,
+            'om': 'limit',
+            'os': None,
+            'ot': 1,
+            'mtt': None,
+            'sf': 0.15,
+            'lc': -0.05,
+            'strnm': "SPREAD_STRATEGY"
+        }
+        asyncio.create_task(
+            ping(**order)
+        )
+
+        # REPORT SIGNAL
         print(sysmsgs.MIDDLE03_MSG_SIG_TIME.format(dt))
         print(sysmsgs.MIDDLE03_MSG_SIG_IND_ON)
         print(sysmsgs.MIDDLE03_MSG_SIG_PRC.format(self.prc_deli, self.prc_perp))
         print(sysmsgs.MIDDLE03_MSG_SIG_SPD.format(self.deli_ask, current_value))
+        print(sysmsgs.MIDDLE03_MSG_SIG_TIME.format(dt))
 
     def qprocess_signal_turnoff(self, current_value:float) -> None:
         """
@@ -182,12 +214,36 @@ class BinanceLiveStream:
         self.spld_sig = False
         self.spld_tgt_loc = None
 
+        # SEND SIGNAL TO BROADCASTER
+        dt = datetime.datetime.now().strftime('%H%M%S')
+        order = {
+            'date': dt,
+            'trader': None,
+            'signal': False,
+            'symbol_l': self.long_symbol,
+            'symbol_s': self.short_symbol,
+            'asset_typ': 'spread',
+            'mir': 0.2,
+            'mim': 100,
+            'om': 'limit',
+            'os': None,
+            'ot': 1,
+            'mtt': None,
+            'sf': 0.15,
+            'lc': -0.05,
+            'strnm': "SPREAD_STRATEGY"
+        }
+        asyncio.create_task(
+            ping(**order)
+        )
+
         # REPORT SIGNAL
         dt = datetime.datetime.now().strftime('%H%M%S')
         print(sysmsgs.MIDDLE03_MSG_SIG_TIME.format(dt))
         print(sysmsgs.MIDDLE03_MSG_SIG_IND_OFF)
         print(sysmsgs.MIDDLE03_MSG_SIG_PRC.format(self.prc_deli, self.prc_perp))
         print(sysmsgs.MIDDLE03_MSG_SIG_SPD.format(self.deli_ask, current_value))
+        print(sysmsgs.MIDDLE03_MSG_SIG_TIME.format(dt))
 
     def report_perp_tick(self, msg) -> None:
         """
@@ -272,6 +328,7 @@ class BinanceLiveStream:
 
         # ORDER BOOK
         expr_month = self.get_future_expr()
+        self.long_symbol, self.short_symbol = f'{symbol}{expr_month}', symbol
         twm_tick.start_symbol_ticker_futures_socket(
             callback=self.report_perp_tick,
             symbol=symbol
