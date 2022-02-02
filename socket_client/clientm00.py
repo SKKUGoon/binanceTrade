@@ -42,7 +42,7 @@ async def ping(date:str, trader:str, symbol:str, asset_typ:str, mir:float, mim:i
         )
 
         payload = {
-            'signal_type': 'trade',
+            'signal_type': 'spot_trade',
             'date': date,
             'trader': trader,
             'asset_type': asset_typ,  # spot

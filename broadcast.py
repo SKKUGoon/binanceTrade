@@ -40,7 +40,7 @@ async def echo(websocket):
                     await backs.send(payload)
 
             # TRADE SIGNALS
-            elif m['signal_type'] == 'trade':
+            elif m['signal_type'] == 'spot_trade':
                 print(sysmsgs.BROADCAST_MIDD_SIG2)
                 payload = json.dumps(wssmsgs.midl_trde_resp)
                 await websocket.send(payload)

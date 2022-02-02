@@ -9,14 +9,13 @@ import json
 
 # FRONT OFFICE CLIENT
 # NAME:
-# DATABASE_INSERTION
+# SPOT TRADER
 # OBJECTIVE:
-# CHECK WHETHER BROADCASTER IS WORKING
-# BY CONSISTANTLY PINGING IT
-# FREQ: 5SECS
+# IF 'SPOT_TRADE' SIGNAL IS RECEIVED
+# TRADE SPOT TRADE USING BinanceTrader API
 
 async def listen():
-    btrade = BinanceTrader()
+    spot_trade = BinanceTrader()
     url = "ws://127.0.0.1:7890"
     async with websockets.connect(url) as ws:
         cover = wssmsgs.frnt_conn_init
@@ -26,18 +25,18 @@ async def listen():
         while True:
             msg = await ws.recv()
             m = json.loads(msg)
-            if m['signal_type'] == 'trade':
+            if m['signal_type'] == 'spot_trade':
                 print(m)
                 t = threading.Thread(name='Binance Trader',
-                                     target=btrade.process_order,
+                                     target=spot_trade.process_order,
                                      kwargs=m['data'])
                 t.start()
             elif m['signal_type'] == 'test_trade':
-                btrade.binance.set_sandbox_mode(True)
-                t = threading.Thread(target=btrade.process_order,
+                spot_trade.binance.set_sandbox_mode(True)
+                t = threading.Thread(target=spot_trade.process_order,
                                      kwargs=m['data'])
                 t.start()
-                btrade.binance.set_sandbox_mode(False)
+                spot_trade.binance.set_sandbox_mode(False)
             else:
                 pass
 

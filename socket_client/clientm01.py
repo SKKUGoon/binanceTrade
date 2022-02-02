@@ -1,7 +1,6 @@
 from settings import wssmsg as wssmsgs
 from settings import sysmsg as sysmsgs
 from datetime import datetime, timedelta
-from typing import List
 from html.parser import HTMLParser
 import websockets
 import asyncio
@@ -19,7 +18,7 @@ import json
 # FREQ: SECS
 
 async def ping(date:str, trader:str, symbol:str, asset_typ:str, mir:float, mim:int, om:str, os:str, ot:int,
-               mtt:int, sf:float, strnm:str):
+               mtt:int, sf:float, strnm:str) -> None:
     """
     :param date: ping date
     :param trader: trading platform in {'binance'}
@@ -43,7 +42,7 @@ async def ping(date:str, trader:str, symbol:str, asset_typ:str, mir:float, mim:i
         )
 
         payload = {
-            'signal_type': 'trade',
+            'signal_type': 'spot_trade',
             'date': date,
             'trader': trader,
             'asset_type': asset_typ,  # spot
