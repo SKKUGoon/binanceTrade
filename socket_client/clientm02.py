@@ -1,4 +1,5 @@
 from settings import sysmsg as sysmsgs
+from settings import wssmsg as wssmsgs
 
 from binance import ThreadedWebsocketManager
 from binance.enums import ContractType
@@ -7,9 +8,59 @@ import numpy as np
 from dateutil.relativedelta import FR, relativedelta
 from collections import deque
 from typing import Iterable
+import websockets
 import datetime
+import asyncio
 import json
 import time
+
+
+async def ping(date:str, trader:str, symbol:str, asset_typ:str, mir:float, mim:int, om:str, os:str, ot:int,
+               mtt:int, sf:float, strnm:str):
+    """
+    :param date: ping date
+    :param trader: trading platform in {'binance'}
+    :param symbol: ticker name of the asset
+    :param mir: maximum investable ratio in float
+    :param mim: maximum investable money in integer
+    :param om: order method in {'limit', 'market'}
+    :param os: order slicing in {'twap', 'vwap', None}
+    :param ot: orderfill waiting time(seconds) in integer
+    :param mtt: maximum trading time(seconds) in integer
+    :param sf: satisfactory return to drawdown.
+    :param strnm: strategy name
+    :return:
+    """
+    url = "ws://127.0.0.1:7890"
+
+    async with websockets.connect(url) as ws:
+        cover = wssmsgs.midl_conn_init
+        await ws.send(
+            json.dumps(cover)
+        )
+
+        payload = {
+            'signal_type': 'test_trade',
+            'date': date,
+            'trader': trader,
+            'asset_type': asset_typ,  # spot
+            'data':{
+                'strat_name': strnm,
+                'symbol': symbol,
+                'max_invest_ratio': mir,
+                'max_invest_money': mim,
+                'order_method': om,  # limit, market
+                'order_slice': os,
+                'orderfill_time': ot,  # seconds
+                'max_trade_time': mtt,
+                'satisfactory': sf
+            }
+        }
+        payload_j = json.dumps(payload)
+        await ws.send(payload_j)
+
+        msg = await ws.recv()
+        print(msg)
 
 
 def get_token(target:str, typ:str, loc='../key.json') -> str:
@@ -54,10 +105,6 @@ class BinanceLiveStream:
         m = np.mean(obj)
         s = np.std(obj)
         return m - apart * s, m + apart * s, m - ending * s
-
-    @staticmethod
-    def report_signal():
-        print("")
 
     def qprocess_prep(self, spread_value:float) -> None:
         """
@@ -122,7 +169,7 @@ class BinanceLiveStream:
         print(sysmsgs.MIDDLE03_MSG_SIG_PRC.format(self.prc_deli, self.prc_perp))
         print(sysmsgs.MIDDLE03_MSG_SIG_SPD.format(self.deli_ask, current_value))
 
-    def qprocess_signal_turnoff(self, current_value:float):
+    def qprocess_signal_turnoff(self, current_value:float) -> None:
         """
         Start if the condition is met.
             1) Turn off the spread signal.
@@ -142,7 +189,7 @@ class BinanceLiveStream:
         print(sysmsgs.MIDDLE03_MSG_SIG_PRC.format(self.prc_deli, self.prc_perp))
         print(sysmsgs.MIDDLE03_MSG_SIG_SPD.format(self.deli_ask, current_value))
 
-    def report_perp_tick(self, msg):
+    def report_perp_tick(self, msg) -> None:
         """
         Spread Calc
         [SHORT TERM] - [LONG TERM]
@@ -182,7 +229,7 @@ class BinanceLiveStream:
                 # Queue Management
                 self.qprocess_maintain_sec(value=spread_spld)
 
-    def report_deli_tick(self, msg):
+    def report_deli_tick(self, msg) -> None:
         best_bid = float(msg['data']['b'])
         best_ask = float(msg['data']['a'])
 
@@ -191,14 +238,14 @@ class BinanceLiveStream:
         self.deli_ask = best_ask
         self.spread_calc = True
 
-    def report_deli_kline(self, msg):
+    def report_deli_kline(self, msg) -> None:
         self.prc_deli = float(msg['k']['c'])
 
-    def report_perp_kline(self, msg):
+    def report_perp_kline(self, msg) -> None:
         self.prc_perp = float(msg['k']['c'])
 
     @staticmethod
-    def get_future_expr(dfmt='%Y%m%d'):
+    def get_future_expr(dfmt='%Y%m%d') -> str:
         """
         Binance Future always expires on
         LAST FRIDAY OF THE MONTH.
@@ -216,7 +263,7 @@ class BinanceLiveStream:
         )
         return f"_{last_fri.strftime(dfmt)[2:]}"
 
-    def main(self, symbol:str):
+    def main(self, symbol:str) -> None:
         twm_kline = ThreadedWebsocketManager(self.ID, self.PW)
         twm_tick = ThreadedWebsocketManager(self.ID, self.PW)
 
