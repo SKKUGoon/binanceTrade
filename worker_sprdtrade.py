@@ -76,11 +76,7 @@ class BinanceSpread:
         amount_pre = rounddown['amount']
         amt = self.decimal_rounddown(1, amount_pre)
         return amt
-
-
-
-
-    # TODO: MAKE JSON FILES
+        # TODO: MAKE JSON FILES
 
 
 if __name__ == '__main__':

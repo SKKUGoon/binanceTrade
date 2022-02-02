@@ -135,7 +135,6 @@ class UpbitNews:
             time.sleep(60)
 
 
-
 if __name__ == '__main__':
     ub = UpbitNews()
     while True:
