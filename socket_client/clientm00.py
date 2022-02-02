@@ -105,8 +105,8 @@ class UpbitNews:
                         "trader": None,
                         "asset_typ": 'spot',
                         "symbol": coin,
-                        "mir": 0.2,
-                        "mim": 100,  # Dollars
+                        "mir": 0.5,
+                        "mim": 300,  # Dollars
                         "om": "limit",
                         "os": None,
                         "ot": 2,
