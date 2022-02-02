@@ -41,6 +41,8 @@ async def echo(websocket):
 
             # TRADE SIGNALS
             elif m['signal_type'] == 'spot_trade':
+                for front in frontoffice:
+                    await front.send(message)
                 print(sysmsgs.BROADCAST_MIDD_SIG2)
                 payload = json.dumps(wssmsgs.midl_trde_resp)
                 await websocket.send(payload)
@@ -48,8 +50,17 @@ async def echo(websocket):
                     await back.send(message)
                 for middle in middleoffice:
                     await middle.send(payload)
+
+            elif m['signal_type'] == 'spread_trade':
                 for front in frontoffice:
                     await front.send(message)
+                print(sysmsgs.BROADCAST_MIDD_SIG2)
+                payload = json.dumps(wssmsgs.midl_trde_resp)
+                await websocket.send(payload)
+                for back in backoffice:
+                    await back.send(message)
+                for middle in middleoffice:
+                    await middle.send(payload)
 
             elif m['signal_type'] == 'test_trade':
                 print(sysmsgs.BROADCAST_BACK_SIG3)
