@@ -1,4 +1,5 @@
 from settings import wssmsg as wssmsgs
+from settings import sysmsg as sysmsgs
 from datetime import datetime, timedelta
 from typing import List
 from html.parser import HTMLParser
@@ -89,13 +90,13 @@ class MyHTMLParser(HTMLParser):
             self._bag_of_bag.append(data.replace(' ', ''))
 
 
-class BitthumbNews:
+class BitThumbNews:
     today = datetime.now()
 
-    def __init__(self):
+    def __init__(self, holding:int=140):
         self.url = "https://cafe.bithumb.com/view/boards/43"
         self.header = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
-
+        self.holdings = holding
 
     @staticmethod
     def is_english(val:str) -> bool:
@@ -177,7 +178,10 @@ class BitthumbNews:
         coins = list(map(self.mkorder, self.bitthumb_news))
         ordersend = False  # Default State
         if len(coins) == 0:
-            print(datetime.now().strftime('%H%M%S'), '[Bitthumb] No New info')
+            print(
+                datetime.now().strftime('%H%M%S'),
+                sysmsgs.MIDDLE02_MSG_NOINFO
+            )
         else:
             ordersend = True
             for order in coins:
@@ -185,11 +189,15 @@ class BitthumbNews:
                     ping(**order)
                 )
         if ordersend is True:
-            print(datetime.now().strftime('%H%M%S'), "[Bitthumb] Order Sent. Sleep 140sec")
-            time.sleep(70 * 2)
+            print(
+                datetime.now().strftime('%H%M%S'),
+                sysmsgs.MIDDLE02_MSG_ORDER
+            )
+            time.sleep(self.holdings)
+
 
 if __name__ == '__main__':
-    bn = BitthumbNews()
+    bn = BitThumbNews()
     while True:
         bn.run()
         time.sleep(0.25)

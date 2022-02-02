@@ -1,4 +1,5 @@
 from settings import wssmsg as wssmsgs
+from settings import sysmsg as sysmsgs
 from datetime import datetime, timedelta
 from typing import List
 import websockets
@@ -119,12 +120,18 @@ class UpbitNews:
     def run(self):
         self._get_news()
         if len(self.od) == 0:
-            print(datetime.now().strftime('%H%M%S'), '[Upbit] No New info')
+            print(
+                datetime.now().strftime('%H%M%S'),
+                sysmsgs.MIDDLE01_MSG_NOINFO
+            )
         for orders in self.od:
             asyncio.get_event_loop().run_until_complete(
                 ping(**orders)
             )
-            print(datetime.now().strftime('%H%M%S'), '[Upbit] Order Sent. Sleep for 60sec')
+            print(
+                datetime.now().strftime('%H%M%S'),
+                sysmsgs.MIDDLE01_MSG_ORDER
+            )
             time.sleep(60)
 
 
