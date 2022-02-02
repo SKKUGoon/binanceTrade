@@ -17,11 +17,26 @@ def get_token(target:str, typ:str, loc='.\key.json') -> str:
 
 
 class BinanceSpread:
-    def __init__(self):
+    def __init__(self, short_symbol:str, long_symbol:str):
         print("[BinanceSpread] StandBy")
         self.binance = ccxt.binance(config=self.login_config)
         self.marketinfo = self.binance.load_markets()
         self.balance = self.get_balance()
+
+        # Symbol CONSTANT
+        self.SHORTSYMBOL = short_symbol
+        self.LONGSYMBOL = long_symbol
+        self.set_market_leverage(self.SHORTSYMBOL)
+        self.set_market_leverage(self.LONGSYMBOL)
+
+    def set_market_leverage(self, symbol, leverage:int=20):
+        if "/" in symbol:
+            symbol = symbol.replace("/", "")
+        print(f"[BinanceSpread] Setting {symbol} leverage to {leverage}")
+        self.binance.fapiPrivate_post_leverage({
+            'symbol': symbol,
+            'leverage': leverage
+        })
 
     def login_check(self):
         self.binance = ccxt.binance(config=self.login_config)
@@ -62,8 +77,15 @@ class BinanceSpread:
         amt = self.decimal_rounddown(1, amount_pre)
         return amt
 
+
+
+
     # TODO: MAKE JSON FILES
 
 
 if __name__ == '__main__':
-    bs = BinanceSpread()
+    bs = BinanceSpread(
+        short_symbol="ETH/USDT",
+        long_symbol='ETHUSDT_220325'
+    )
+    bs.binance.set_sandbox_mode(True)
