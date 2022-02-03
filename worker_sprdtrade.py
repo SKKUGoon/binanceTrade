@@ -1,5 +1,6 @@
 import threading
 
+import numpy as np
 import ccxt
 
 import json
@@ -17,7 +18,7 @@ def get_token(target:str, typ:str, loc='.\key.json') -> str:
 
 
 class BinanceSpread:
-    def __init__(self, short_symbol:str, long_symbol:str):
+    def __init__(self, short_symbol:str, long_symbol:str, leverage:int=20):
         print("[BinanceSpread] StandBy")
         self.binance = ccxt.binance(config=self.login_config)
         self.marketinfo = self.binance.load_markets()
@@ -26,8 +27,8 @@ class BinanceSpread:
         # Symbol CONSTANT
         self.SHORTSYMBOL = short_symbol
         self.LONGSYMBOL = long_symbol
-        self.set_market_leverage(self.SHORTSYMBOL)
-        self.set_market_leverage(self.LONGSYMBOL)
+        self.set_market_leverage(self.SHORTSYMBOL, leverage=leverage)
+        self.set_market_leverage(self.LONGSYMBOL, leverage=leverage)
 
     def set_market_leverage(self, symbol, leverage:int=20):
         if "/" in symbol:
@@ -76,7 +77,41 @@ class BinanceSpread:
         amount_pre = rounddown['amount']
         amt = self.decimal_rounddown(1, amount_pre)
         return amt
-        # TODO: MAKE JSON FILES
+
+    def enter_spread_long_buy(self, **kwargs):
+        quantity = np.minimum(
+            np.multiply(self.balance, kwargs['max_invest_ratio']),
+            kwargs['max_invest_money']
+        )
+        order = self.binance.create_market_buy_order(
+            symbol=kwargs['symbol_long'],
+            amount=quantity
+        )
+
+    def enter_spread_short_buy(self, **kwargs):
+        quantity = np.minimum(
+            np.multiply(self.balance, kwargs['max_invest_ratio']),
+            kwargs['max_invest_money']
+        )
+        self.binance.create_market_sell_order(
+            symbol=kwargs['symbol_short'],
+            amount=quantity
+        )
+
+    def exit_spread_long_sell(self, **kwargs):
+
+        self.binance.create_market_sell_order(
+            symbol=kwargs['symbol_long'],
+            amount=...
+        )
+        ...
+
+    def exit_spread_short_sell(self, **kwargs):
+        self.binance.create_market_buy_order(
+            symbol=kwargs['symbol_short'],
+            amount=...
+        )
+        ...
 
 
 if __name__ == '__main__':

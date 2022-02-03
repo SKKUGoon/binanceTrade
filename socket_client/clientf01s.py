@@ -26,11 +26,14 @@ async def listen():
             msg = await ws.recv()
             m = json.loads(msg)
             if m['signal_type'] == 'spread_trade':
-                print(m)
-                # t = threading.Thread(name='Binance Trader',
-                #                      target=spread_trade.process_order,
-                #                      kwargs=m['data'])
-                # t.start()
+                if m['data']['long_or_shot'] is True:
+                    # Signal On
+                    ...
+                else:
+                    # Signal Off
+                    ...
+                print(m['data'])
+
             elif m['signal_type'] == 'test_trade':
                 # spread_trade.binance.set_sandbox_mode(True)
                 # t = threading.Thread(target=spread_trade.process_order,
