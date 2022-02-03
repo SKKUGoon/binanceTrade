@@ -76,8 +76,8 @@ def get_token(target:str, typ:str, loc='../key.json') -> str:
 
 
 class BinanceLiveStream:
-    def __init__(self, tick_equidistant:int=2, tick_collect:int=1, abn_band:float=3.5,
-                 abn_stop:float=0.5):
+    def __init__(self, tick_equidistant:int=2, tick_collect:int=5, abn_band:float=4.5,
+                 abn_stop:float=0.0):
         # CONSTANT VARIABLE
         ## PRIVACY
         self.ID = get_token('binance_live', 'access_key')

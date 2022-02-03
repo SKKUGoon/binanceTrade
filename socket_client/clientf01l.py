@@ -16,8 +16,8 @@ import json
 
 async def listen():
     spread_trade = BinanceSpread(
-        short_symbol=...,
-        long_symbol=...,
+        short_symbol="ETH/USDT",
+        long_symbol="ETHUSDT_220325",
     )
     url = "ws://127.0.0.1:7890"
     async with websockets.connect(url) as ws:
@@ -29,18 +29,16 @@ async def listen():
             msg = await ws.recv()
             m = json.loads(msg)
             if m['signal_type'] == 'spread_trade':
-                if m['data']['long_or_shot'] is True:
+                if m['data']['long_or_short'] is True:
                     # Signal On
-                    t = threading.Thread(target=...,
-                                         kwargs=...)
-                    ...
+                    t = threading.Thread(target=spread_trade.enter_spread_long_buy,
+                                         kwargs=m['data'])
                 else:
                     # Signal Off
-                    t = threading.Thread(target=...,
-                                         kwargs=...)
-                    ...
-                print(m['data'])
+                    t = threading.Thread(target=spread_trade.exit_spread_long_sell,
+                                         kwargs=m['data'])
                 t.start()
+                print(m['data'])
 
             elif m['signal_type'] == 'test_trade':
                 spread_trade.binance.set_sandbox_mode(True)

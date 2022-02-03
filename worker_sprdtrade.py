@@ -9,7 +9,7 @@ import math
 import os
 
 
-def get_token(target:str, typ:str, loc='.\key.json') -> str:
+def get_token(target:str, typ:str, loc='..\key.json') -> str:
     p = os.path.abspath('key.json')
     with open(loc, 'r') as file:
         dat = json.load(file)
@@ -75,43 +75,36 @@ class BinanceSpread:
         # All Trades are going to be market price based
         rounddown = self.marketinfo[symbol]['precision']
         amount_pre = rounddown['amount']
-        amt = self.decimal_rounddown(1, amount_pre)
+        amt = self.decimal_rounddown(using, amount_pre)
         return amt
 
     def enter_spread_long_buy(self, **kwargs):
-        quantity = np.minimum(
-            np.multiply(self.balance, kwargs['max_invest_ratio']),
-            kwargs['max_invest_money']
-        )
         order = self.binance.create_market_buy_order(
             symbol=kwargs['symbol_long'],
-            amount=quantity
+            amount=0.04
         )
+        print(order)
 
     def enter_spread_short_buy(self, **kwargs):
-        quantity = np.minimum(
-            np.multiply(self.balance, kwargs['max_invest_ratio']),
-            kwargs['max_invest_money']
-        )
-        self.binance.create_market_sell_order(
+        order = self.binance.create_market_sell_order(
             symbol=kwargs['symbol_short'],
-            amount=quantity
+            amount=0.04
         )
+        print(order)
 
     def exit_spread_long_sell(self, **kwargs):
-
-        self.binance.create_market_sell_order(
+        order = self.binance.create_market_sell_order(
             symbol=kwargs['symbol_long'],
-            amount=...
+            amount=0.04
         )
-        ...
+        print(order)
 
     def exit_spread_short_sell(self, **kwargs):
-        self.binance.create_market_buy_order(
+        order = self.binance.create_market_buy_order(
             symbol=kwargs['symbol_short'],
-            amount=...
+            amount=0.04
         )
-        ...
+        print(order)
 
 
 if __name__ == '__main__':
@@ -119,4 +112,4 @@ if __name__ == '__main__':
         short_symbol="ETH/USDT",
         long_symbol='ETHUSDT_220325'
     )
-    bs.binance.set_sandbox_mode(True)
+    sig = {'symbol_long': "ETH/USDT"}
