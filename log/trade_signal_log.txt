@@ -1,0 +1,57 @@
+==========230528==========
+[Spread Arbitrage] Signal On
+Current Price Delivery: 2608.55
+Current Price Perp: 2598.18
+Current LONG Delivery: 2608.19
+Current SHORT Perp: 2598.58
+==========230528==========
+{"signal_type": "trade_resp", "data": {"status": "recieved", "msg": "successfully recieved"}}
+==========230528==========
+[Spread Arbitrage] Signal Off
+Current Price Delivery: 2608.55
+Current Price Perp: 2598.58
+Current LONG Delivery: 2609.55
+Current SHORT Perp: 2598.4
+==========230528==========
+{"signal_type": "trade_resp", "data": {"status": "recieved", "msg": "successfully recieved"}}
+
+
+==========230556==========
+[Spread Arbitrage] Signal On
+Current Price Delivery: 2607.16
+Current Price Perp: 2596.32
+Current LONG Delivery: 2606.58
+Current SHORT Perp: 2596.99
+==========230556==========
+{"signal_type": "trade_resp", "data": {"status": "recieved", "msg": "successfully recieved"}}
+==========230556==========
+[Spread Arbitrage] Signal Off
+Current Price Delivery: 2607.16
+Current Price Perp: 2596.32
+Current LONG Delivery: 2608.48
+Current SHORT Perp: 2597.23
+==========230556==========
+{"signal_type": "trade_resp", "data": {"status": "recieved", "msg": "successfully recieved"}}
+
+
+
+==========230644==========
+[Spread Arbitrage] Signal On
+Current Price Delivery: 2605.83
+Current Price Perp: 2596.48
+Current LONG Delivery: 2606.23
+Current SHORT Perp: 2596.62
+==========230644==========
+{"signal_type": "trade_resp", "data": {"status": "recieved", "msg": "successfully recieved"}}
+
+==========230647==========
+[Spread Arbitrage] Signal Off
+Current Price Delivery: 2606.23
+Current Price Perp: 2597.4
+Current LONG Delivery: 2608.6
+Current SHORT Perp: 2597.39
+==========230647==========
+{"signal_type": "trade_resp", "data": {"status": "recieved", "msg": "successfully recieved"}}
+
+
+Process finished with exit code -1
