@@ -30,7 +30,7 @@ class BinanceSpread:
         self.set_market_leverage(self.SHORTSYMBOL, leverage=leverage)
         self.set_market_leverage(self.LONGSYMBOL, leverage=leverage)
 
-    def set_market_leverage(self, symbol, leverage:int=20):
+    def set_market_leverage(self, symbol:str, leverage:int=20):
         if "/" in symbol:
             symbol = symbol.replace("/", "")
         print(f"[BinanceSpread] Setting {symbol} leverage to {leverage}")
@@ -74,9 +74,13 @@ class BinanceSpread:
     def _get_trading_info(self, symbol:str, using:float) -> (float, float):
         # All Trades are going to be market price based
         rounddown = self.marketinfo[symbol]['precision']
-        amount_pre = rounddown['amount']
+        price_pre, amount_pre = rounddown['price'], rounddown['amount']
+        prc = self.decimal_rounddown(
+            self.binance.fetch_ticker(f'{symbol}/USDT')['close'],
+            price_pre
+        )
         amt = self.decimal_rounddown(using, amount_pre)
-        return amt
+        return prc, amt
 
     def enter_spread_long_buy(self, **kwargs):
         order = self.binance.create_market_buy_order(
@@ -93,16 +97,26 @@ class BinanceSpread:
         print(order)
 
     def exit_spread_long_sell(self, **kwargs):
-        order = self.binance.create_market_sell_order(
+        p, _ = self._get_trading_info(
             symbol=kwargs['symbol_long'],
-            amount=0.04
+            using=0.04
+        )
+        order = self.binance.create_limit_sell_order(
+            symbol=kwargs['symbol_long'],
+            amount=0.04,
+            price=p
         )
         print(order)
 
     def exit_spread_short_sell(self, **kwargs):
-        order = self.binance.create_market_buy_order(
+        p, _ = self._get_trading_info(
             symbol=kwargs['symbol_short'],
-            amount=0.04
+            using=0.04
+        )
+        order = self.binance.create_limit_buy_order(
+            symbol=kwargs['symbol_short'],
+            amount=0.04,
+            price=p
         )
         print(order)
 
