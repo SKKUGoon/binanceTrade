@@ -4,6 +4,7 @@ import websockets
 import asyncio
 import time
 import json
+import os
 
 
 # BACK OFFICE CLIENT
@@ -30,6 +31,9 @@ async def listen(server:LocalDBMethods2):
 
 
 def back01():
+    print(f'process name {__name__}')
+    print(f'parent process {os.getppid()}')
+    print(f'process id {os.getpid()}')
     db = LocalDBMethods2('TDB.db')
     asyncio.get_event_loop().run_until_complete(listen(db))
 

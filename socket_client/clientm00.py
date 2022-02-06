@@ -7,6 +7,7 @@ import asyncio
 import requests
 import time
 import json
+import os
 
 
 # MIDDLE OFFICE CLIENT
@@ -136,6 +137,9 @@ class UpbitNews:
 
 
 def middle00():
+    print(f'process name {__name__}')
+    print(f'parent process {os.getppid()}')
+    print(f'process id {os.getpid()}')
     ub = UpbitNews()
     while True:
         ub.run()

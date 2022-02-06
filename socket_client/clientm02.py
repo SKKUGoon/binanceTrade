@@ -13,6 +13,7 @@ import datetime
 import asyncio
 import json
 import time
+import os
 
 
 async def ping(date:str, trader:str, signal:bool, symbol_l:str, symbol_s:str, asset_typ:str, mir:float, mim:int, om:str, os:str, ot:int,
@@ -355,6 +356,9 @@ class BinanceLiveStream:
 
 
 def middle02(symbol:str):
+    print(f'process name {__name__}')
+    print(f'parent process {os.getppid()}')
+    print(f'process id {os.getpid()}')
     b = BinanceLiveStream()
     b.main(symbol)
 

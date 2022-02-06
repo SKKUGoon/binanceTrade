@@ -7,6 +7,7 @@ import asyncio
 import requests
 import time
 import json
+import os
 
 
 # MIDDLE OFFICE CLIENT
@@ -196,6 +197,9 @@ class BitThumbNews:
 
 
 def middle01():
+    print(f'process name {__name__}')
+    print(f'parent process {os.getppid()}')
+    print(f'process id {os.getpid()}')
     bn = BitThumbNews()
     while True:
         bn.run()

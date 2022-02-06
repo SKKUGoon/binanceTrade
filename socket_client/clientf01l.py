@@ -5,6 +5,7 @@ import asyncio
 import time
 import threading
 import json
+import os
 
 
 # FRONT OFFICE CLIENT
@@ -52,6 +53,9 @@ async def listen():
 
 
 def front01l():
+    print(f'process name {__name__}')
+    print(f'parent process {os.getppid()}')
+    print(f'process id {os.getpid()}')
     asyncio.get_event_loop().run_until_complete(listen())
 
 

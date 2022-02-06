@@ -16,6 +16,7 @@ import websockets
 import asyncio
 import json
 import time
+import os
 
 
 def get_token(target:str, typ:str, loc='../key.json') -> str:
@@ -125,6 +126,9 @@ class BinancePremiumIndex:
 
 
 def middle03(symbol:str):
+    print(f'process name {__name__}')
+    print(f'parent process {os.getppid()}')
+    print(f'process id {os.getpid()}')
     premium = BinancePremiumIndex(target_coin=symbol)
     while True:
         dt = datetime.now().strftime('%H%M%S')
