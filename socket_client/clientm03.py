@@ -124,8 +124,8 @@ class BinancePremiumIndex:
         return ibp
 
 
-if __name__ == '__main__':
-    premium = BinancePremiumIndex(target_coin='ETHUSDT')
+def middle03(symbol:str):
+    premium = BinancePremiumIndex(target_coin=symbol)
     while True:
         dt = datetime.now().strftime('%H%M%S')
         s = premium.calc_premium_index()
@@ -133,5 +133,5 @@ if __name__ == '__main__':
         time.sleep(1)
 
 
-
-
+if __name__ == '__main__':
+    middle03('ETHUSDT')

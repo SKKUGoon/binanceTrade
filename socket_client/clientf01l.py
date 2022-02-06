@@ -51,6 +51,11 @@ async def listen():
                 pass
 
 
-asyncio.get_event_loop().run_until_complete(listen())
+def front01l():
+    asyncio.get_event_loop().run_until_complete(listen())
+
+
+if __name__ == "__main__":
+    front01l()
 
 

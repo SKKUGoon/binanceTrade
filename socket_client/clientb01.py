@@ -29,7 +29,15 @@ async def listen(server:LocalDBMethods2):
                 pass
 
 
-db = LocalDBMethods2('TDB.db')
-asyncio.get_event_loop().run_until_complete(listen(db))
+def back01():
+    db = LocalDBMethods2('TDB.db')
+    asyncio.get_event_loop().run_until_complete(listen(db))
+
+
+if __name__ == '__main__':
+    back01()
+
+
+
 
 

@@ -42,6 +42,11 @@ async def listen():
             time.sleep(5)
 
 
-asyncio.get_event_loop().run_until_complete(listen())
+def back00():
+    asyncio.get_event_loop().run_until_complete(listen())
+
+
+if __name__ == '__main__':
+    back00()
 
 

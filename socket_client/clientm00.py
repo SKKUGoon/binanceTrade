@@ -135,8 +135,12 @@ class UpbitNews:
             time.sleep(60)
 
 
-if __name__ == '__main__':
+def middle00():
     ub = UpbitNews()
     while True:
         ub.run()
         time.sleep(0.25)
+
+
+if __name__ == '__main__':
+    middle00()

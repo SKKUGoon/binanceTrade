@@ -76,7 +76,7 @@ def get_token(target:str, typ:str, loc='../key.json') -> str:
 
 
 class BinanceLiveStream:
-    def __init__(self, tick_equidistant:int=2, tick_collect:int=5, abn_band:float=4.5,
+    def __init__(self, tick_equidistant:int=30, tick_collect:int=5, abn_band:float=4.5,
                  abn_stop:float=0.0):
         # CONSTANT VARIABLE
         ## PRIVACY
@@ -270,7 +270,8 @@ class BinanceLiveStream:
 
             if self.spld_sig is False:
                 if self.spld_l is not None:
-                    if self.spld_l > spread_spld:
+                    cond1 = self.spld_l > spread_spld
+                    if cond1:
                         self.qprocess_signal_turnon(best_bid)  # After this, Signal is True
 
                 # Queue Management
@@ -353,6 +354,10 @@ class BinanceLiveStream:
         twm_tick.join()
 
 
-if __name__ == '__main__':
+def middle02(symbol:str):
     b = BinanceLiveStream()
-    b.main('ETHUSDT')
+    b.main(symbol)
+
+
+if __name__ == '__main__':
+    middle02('ETHUSDT')

@@ -195,8 +195,12 @@ class BitThumbNews:
             time.sleep(self.holdings)
 
 
-if __name__ == '__main__':
+def middle01():
     bn = BitThumbNews()
     while True:
         bn.run()
         time.sleep(0.25)
+
+
+if __name__ == '__main__':
+    middle01()

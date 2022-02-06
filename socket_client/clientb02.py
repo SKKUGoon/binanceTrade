@@ -49,6 +49,11 @@ async def listen(rptfmt='D%Y%m%dT%H:%M:%S'):
         print(m)
 
 
-asyncio.get_event_loop().run_until_complete(listen())
+def back02():
+    asyncio.get_event_loop().run_until_complete(listen())
+
+
+if __name__ == "__main__":
+    back02()
 
 
