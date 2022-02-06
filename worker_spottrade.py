@@ -50,7 +50,6 @@ class BinanceTrader:
         return min(self.balance * mir, mim)
 
     def _get_trading_info(self, symbol:str, using:float) -> (float, float):
-
         rounddown = self.marketinfo[f'{symbol}/USDT']['precision']
         price_pre, amount_pre = rounddown['price'], rounddown['amount']
         prc = self.decimal_rounddown(
@@ -163,12 +162,6 @@ class BinanceTrader:
             )
             print(order)
             return
-
-        elif order_method == 'market':
-            order = self.binance.create_market_buy_order(
-                symbol=f"{symbol}/USDT",
-                amount=v
-            )
 
 
 if __name__ == '__main__':
