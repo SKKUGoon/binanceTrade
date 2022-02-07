@@ -1,0 +1,1 @@
+![Alt text](./log/architect.jpg?raw=true "scheme")
