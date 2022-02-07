@@ -77,8 +77,8 @@ def get_token(target:str, typ:str, loc='../key.json') -> str:
 
 
 class BinanceLiveStream:
-    def __init__(self, tick_equidistant:int=30, tick_collect:int=5, abn_band:float=4.5,
-                 abn_stop:float=0.0):
+    def __init__(self, tick_equidistant:int=30, tick_collect:int=5, abn_band:float=5.5,
+                 abn_stop:float=-0.5):
         # CONSTANT VARIABLE
         ## PRIVACY
         self.ID = get_token('binance_live', 'access_key')
@@ -114,7 +114,7 @@ class BinanceLiveStream:
     def bollinger_band(obj:Iterable, apart:float, ending:float) -> (float, float, float):
         m = np.mean(obj)
         s = np.std(obj)
-        return m - apart * s, m + apart * s, m - ending * s
+        return m - apart * s, m + apart * s, m, m - ending * s
 
     def qprocess_prep(self, spread_value:float) -> None:
         """
@@ -144,7 +144,7 @@ class BinanceLiveStream:
         :return: None
         """
         self.spld.append(spread_value)
-        self.spld_l, self.spld_u, self.spld_tgt = self.bollinger_band(
+        self.spld_l, self.spld_u, self.spld_m, self.spld_tgt = self.bollinger_band(
             obj=self.spld,
             apart=self.BAND_WIDTH,
             ending=self.BAND_TARGET
@@ -272,8 +272,14 @@ class BinanceLiveStream:
             if self.spld_sig is False:
                 if self.spld_l is not None:
                     cond1 = self.spld_l > spread_spld
+                    cond2 = self.spld_m - 2 > spread_spld
                     if cond1:
-                        self.qprocess_signal_turnon(best_bid)  # After this, Signal is True
+                        if cond2:
+                            self.qprocess_signal_turnon(best_bid)  # After this, Signal is True
+                        else:
+                            print(sysmsgs.MIDDLE03_MSG_SIG_FAIL.format(
+                                spread_spld, self.spld_m - 2
+                            ))
 
                 # Queue Management
                 if len(self.spld) == 0:
@@ -281,6 +287,7 @@ class BinanceLiveStream:
                 self.qprocess_maintain_sec(value=spread_spld)
 
             else:
+                # Sell after market price becomes normal
                 if self.spld_tgt_loc <= spread_spld:
                     self.qprocess_signal_turnoff(best_bid)  # After this, Signal is False
 
