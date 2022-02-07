@@ -149,7 +149,7 @@ def middle00():
         except Exception as e:
             print(e)
             print(sysmsgs.MIDDLE01_MSG_ERROR)
-            time.sleep(1)
+            time.sleep(0.5)
 
 
 if __name__ == '__main__':
