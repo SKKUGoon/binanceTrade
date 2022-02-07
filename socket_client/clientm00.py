@@ -140,10 +140,16 @@ def middle00():
     print(f'process name {__name__}')
     print(f'parent process {os.getppid()}')
     print(f'process id {os.getpid()}')
-    ub = UpbitNews()
     while True:
-        ub.run()
-        time.sleep(0.25)
+        try:
+            ub = UpbitNews()
+            while True:
+                ub.run()
+                time.sleep(0.25)
+        except Exception as e:
+            print(e)
+            print(sysmsgs.MIDDLE01_MSG_ERROR)
+            time.sleep(1)
 
 
 if __name__ == '__main__':
