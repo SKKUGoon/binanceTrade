@@ -41,13 +41,6 @@ async def listen():
                 t.start()
                 print(m['data'])
 
-            elif m['signal_type'] == 'test_trade':
-                spread_trade.binance.set_sandbox_mode(True)
-                t = threading.Thread(target=spread_trade.process_order,
-                                     kwargs=m['data'])
-                t.start()
-                spread_trade.binance.set_sandbox_mode(False)
-                ...
             else:
                 pass
 
