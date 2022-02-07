@@ -201,10 +201,14 @@ def middle01():
     print(f'parent process {os.getppid()}')
     print(f'process id {os.getpid()}')
     bn = BitThumbNews()
-    while True:
-        bn.run()
-        time.sleep(0.25)
-
+    try:
+        while True:
+            bn.run()
+            time.sleep(0.25)
+    except Exception as e:
+        print(e)
+        print(sysmsgs.MIDDLE02_MSG_ERROR)
+        time.sleep(0.5)
 
 if __name__ == '__main__':
     middle01()
