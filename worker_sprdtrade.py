@@ -18,7 +18,7 @@ def get_token(target:str, typ:str, loc='..\key.json') -> str:
 
 
 class BinanceSpread:
-    def __init__(self, short_symbol:str, long_symbol:str, leverage:int=20):
+    def __init__(self, short_symbol:str, long_symbol:str, leverage:int=1):
         print("[BinanceSpread] StandBy")
         self.binance = ccxt.binance(config=self.login_config)
         self.marketinfo = self.binance.load_markets()
@@ -71,12 +71,12 @@ class BinanceSpread:
     def _get_trading_vol(self, mir:float, mim:int):
         return min(self.balance * mir, mim)
 
-    def _get_trading_info(self, symbol:str, using:float) -> (float, float):
+    def _get_trading_info(self, symbol:str, using:float, slip:float) -> (float, float):
         # All Trades are going to be market price based
         rounddown = self.marketinfo[symbol]['precision']
         price_pre, amount_pre = rounddown['price'], rounddown['amount']
         prc = self.decimal_rounddown(
-            self.binance.fetch_ticker(f'{symbol}/USDT')['close'],
+            self.binance.fetch_ticker(f'{symbol}/USDT')['close'] * slip,
             price_pre
         )
         amt = self.decimal_rounddown(using, amount_pre)
@@ -97,26 +97,28 @@ class BinanceSpread:
         print(order)
 
     def exit_spread_long_sell(self, **kwargs):
-        p, _ = self._get_trading_info(
-            symbol=kwargs['symbol_long'],
-            using=0.04
-        )
-        order = self.binance.create_limit_sell_order(
+        # p, _ = self._get_trading_info(
+        #     symbol=kwargs['symbol_long'],
+        #     using=0.04,
+        #     slip=0.995
+        # )
+        order = self.binance.create_market_sell_order(
             symbol=kwargs['symbol_long'],
             amount=0.04,
-            price=p
+            # price=p
         )
         print(order)
 
     def exit_spread_short_sell(self, **kwargs):
-        p, _ = self._get_trading_info(
-            symbol=kwargs['symbol_short'],
-            using=0.04
-        )
-        order = self.binance.create_limit_buy_order(
+        # p, _ = self._get_trading_info(
+        #     symbol=kwargs['symbol_short'],
+        #     using=0.04,
+        #     slip=0.995
+        # )
+        order = self.binance.create_market_buy_order(
             symbol=kwargs['symbol_short'],
             amount=0.04,
-            price=p
+            # price=p
         )
         print(order)
 
