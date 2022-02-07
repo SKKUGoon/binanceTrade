@@ -3,7 +3,7 @@ from socket_client import clientb01
 from socket_client import clientb02
 from socket_client import clientm00
 from socket_client import clientm01
-from socket_client import clientm02
+from socket_client import clientm02spld
 from socket_client import clientm03
 from socket_client import clientf00
 from socket_client import clientf01s
