@@ -26,9 +26,6 @@ async def echo(websocket):
                 if department == 'back':
                     print(sysmsgs.BROADCAST_BACK_SIG0)
                     backoffice.add(websocket)
-                elif department == 'dscd':
-                    print(sysmsgs.BROADCAST_DSCD_SIG0)
-                    discordoffice.add(websocket)
                 elif department == 'midl':
                     print(sysmsgs.BROADCAST_MIDD_SIG0)
                     middleoffice.add(websocket)
@@ -40,13 +37,6 @@ async def echo(websocket):
             elif m['signal_type'] == 'conn':
                 print(sysmsgs.BROADCAST_BACK_SIG2)
                 payload = json.dumps(wssmsgs.back_conn_resp)
-                for backs in backoffice:
-                    await backs.send(payload)
-
-            elif m['signal_type'] == 'discord_ping':
-                print(sysmsgs.BROADCAST_DSCD_SIG2)
-                payload = json.dumps(wssmsgs.dscd_conn_resp)
-                # chk_payload = json.dumps()
                 for backs in backoffice:
                     await backs.send(payload)
 
@@ -95,9 +85,6 @@ async def echo(websocket):
         elif websocket in middleoffice:
             middleoffice.remove(websocket)
             print(sysmsgs.BROADCAST_MIDD_SIG1)
-        elif websocket in discordoffice:
-            discordoffice.remove(websocket)
-            print(sysmsgs.BROADCAST_DSCD_SIG1)
         else:
             frontoffice.remove(websocket)
             print(sysmsgs.BROADCAST_FRNT_SIG1)

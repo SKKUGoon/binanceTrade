@@ -21,6 +21,15 @@ import os
 PREFIX = "!"
 BOT = commands.Bot(command_prefix=PREFIX)
 
+
+def get_token(target:str, typ:str, loc='..\key.json') -> str:
+    p = os.path.abspath('key.json')
+    with open(loc, 'r') as file:
+        dat = json.load(file)
+    file.close()
+    return dat[target][typ]
+
+
 async def on_ready():
     game = discord.Game("Booted Up")
     await BOT.change_presence(

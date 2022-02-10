@@ -12,9 +12,6 @@ BROADCAST_BACK_SIG1 = f"{bc.HEADER}[WS] BackOffice has -1 Client{bc.ENDC}"
 BROADCAST_BACK_SIG2 = f"{bc.HEADER}[WS] Received connection message from back office{bc.ENDC}"
 BROADCAST_BACK_SIG3 = f"{bc.HEADER}[WS] Received test message from back office{bc.ENDC}"
 
-# BROADCAST_DSCD
-BROADCAST_DSCD_SIG0 = f"{bc.OKGREEN}[WS] Received discord ping testing message{bc.ENDC}"
-
 # BROADCAST_MIDDLE
 BROADCAST_MIDD_SIG0 = f"{bc.OKBLUE}[WS] MiddleOffice has +1 Client{bc.ENDC}"
 BROADCAST_MIDD_SIG1 = f"{bc.OKBLUE}[WS] MiddleOffice has -1 Client{bc.ENDC}"
