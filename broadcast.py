@@ -15,7 +15,7 @@ frontoffice = set()
 discordoffice = set()
 
 
-async def echo(websocket):
+async def echo(websocket, path):
     print(sysmsgs.BROADCAST_TOTL_SIG0)
     try:
         async for message in websocket:
