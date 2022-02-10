@@ -210,5 +210,6 @@ def middle01():
         print(sysmsgs.MIDDLE02_MSG_ERROR)
         time.sleep(0.5)
 
+
 if __name__ == '__main__':
     middle01()

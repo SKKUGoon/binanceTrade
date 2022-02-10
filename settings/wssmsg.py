@@ -37,6 +37,13 @@ frnt_conn_init = {
     }
 }
 
+dscd_conn_init = {
+    'signal_type': 'init',
+    'data': {
+        'dep': 'dscd'
+    }
+}
+
 
 # RESPONSE
 # BACKOFFICE RESPONSE
