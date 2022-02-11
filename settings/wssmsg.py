@@ -1,3 +1,6 @@
+from datetime import datetime
+
+
 # SENDING
 back_conn_init = {
     'signal_type': 'init',
@@ -30,6 +33,13 @@ midl_conn_init = {
     }
 }
 
+midl_actv_mesg = {
+    'signal_type': 'active',
+    'data': {
+        't': datetime.now().strftime('%Y%m%dT%H:%M:%S'),
+    }
+}
+
 frnt_conn_init = {
     'signal_type': 'init',
     'data': {
@@ -46,6 +56,11 @@ dscd_conn_init = {
 
 
 # RESPONSE
+actv_conn_stat = {
+    'signal_type': 'active_log',
+    'status': 'normal'
+}
+
 # BACKOFFICE RESPONSE
 # CONNECTION RESPONSE
 back_conn_resp = {
@@ -77,6 +92,14 @@ back_test_resp = {
 # MIDDLEOFFICE RESPONSE
 midl_trde_resp = {
     'signal_type': 'trade_resp',
+    'data': {
+        'status': 'recieved',
+        'msg': 'successfully recieved'
+    }
+}
+
+midl_actv_resp = {
+    'signal_type': 'ping_resp',
     'data': {
         'status': 'recieved',
         'msg': 'successfully recieved'

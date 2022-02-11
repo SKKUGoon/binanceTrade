@@ -5,6 +5,7 @@ bc = BColors()
 # BROADCASTING MODULE
 BROADCAST_TOTL_SIG0 = "[WS] Client Just Connected"
 BROADCAST_TOTL_SIG1 = "[WS] A client just disconnected"
+BROADCAST_TOTL_SIG2 = "[WS] Active Ping"
 
 # BROADCAST_BACK
 BROADCAST_BACK_SIG0 = f"{bc.HEADER}[WS] BackOffice has +1 Client{bc.ENDC}"

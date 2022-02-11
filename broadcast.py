@@ -4,6 +4,7 @@ from settings import sysmsg as sysmsgs
 import websockets
 import asyncio
 import json
+import copy
 
 PORT = 7890
 
@@ -39,6 +40,22 @@ async def echo(websocket, path):
                 payload = json.dumps(wssmsgs.back_conn_resp)
                 for backs in backoffice:
                     await backs.send(payload)
+            elif m['signal_type'] == 'active':
+                print(sysmsgs.BROADCAST_TOTL_SIG2)
+                # LOG PAYLOAD
+                payload = copy.copy(wssmsgs.actv_conn_stat)
+                payload['data'] = m['data']
+                payload = json.dumps(payload)
+                for backs in backoffice:
+                    await backs.send(payload)
+
+                # ANS PAYLOAD
+                payload = wssmsgs.midl_actv_resp
+                payload = json.dumps(payload)
+                for middle in middleoffice:
+                    await middle.send(payload)
+                for front in frontoffice:
+                    await front.send(payload)
 
             # TRADE SIGNALS
             elif m['signal_type'] == 'spot_trade':

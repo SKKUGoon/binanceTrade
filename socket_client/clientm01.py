@@ -17,6 +17,24 @@ import os
 # GATHER COIN ICO FROM UPBIT
 # BY CONSISTANTLY PINGING IT
 # FREQ: SECS
+async def alive(status, time_, myname:str='m00'):
+    url = "ws://127.0.0.1:7890"
+
+    async with websockets.connect(url) as ws:
+        cover = wssmsgs.midl_conn_init
+        await ws.send(
+            json.dumps(cover)
+        )
+        payload = wssmsgs.midl_actv_mesg
+        payload['data'].update(
+            {'s': status, 't': time_, 'n': myname}
+        )
+        payload_j = json.dumps(payload)
+        await ws.send(payload_j)
+
+        msg = await ws.recv()
+        print(msg)
+
 
 async def ping(date:str, trader:str, symbol:str, asset_typ:str, mir:float, mim:int, om:str, os:str, ot:int,
                mtt:int, sf:float, strnm:str) -> None:
@@ -196,18 +214,29 @@ class BitThumbNews:
             time.sleep(self.holdings)
 
 
-def middle01():
+def middle01(sec:int=5):
     print(f'process name {__name__}')
     print(f'parent process {os.getppid()}')
     print(f'process id {os.getpid()}')
     bn = BitThumbNews()
+    t = time.time()
     try:
         while True:
             bn.run()
+            if time.time() - t > sec:
+                t = time.time()
+                asyncio.get_event_loop().run_until_complete(
+                    alive(status='normal', time_=t)
+                )
             time.sleep(0.25)
+
     except Exception as e:
         print(e)
         print(sysmsgs.MIDDLE02_MSG_ERROR)
+        asyncio.get_event_loop().run_until_complete(
+            alive(status='error', time_=t)
+        )
+        bn = BitThumbNews()
         time.sleep(0.5)
 
 

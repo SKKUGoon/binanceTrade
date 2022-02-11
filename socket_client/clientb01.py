@@ -26,6 +26,8 @@ async def listen(server:LocalDBMethods2):
             m = json.loads(msg)
             if m['signal_type'] == 'trade':
                 print(m['data'])
+            elif m['signal_type'] == 'active_log':
+                print(m)
             else:
                 pass
 
