@@ -34,7 +34,7 @@ MIDDLE01_MSG_ORDER = f"{bc.OKBLUE}[M01 Upbit] Order Sent. Sleeping for 60 sec{bc
 MIDDLE01_MSG_ERROR = f"{bc.WARNING}Not able. Restarting class method{bc.ENDC}"
 
 # MIDDLE02
-MIDDLE02_MSG_NOINFO = f"{bc.OKBLUE}[M02 Bitthumb] No new information{bc.OKBLUE}"
+MIDDLE02_MSG_NOINFO = f"{bc.OKBLUE}[M02 Bitthumb] No new information{bc.ENDC}"
 MIDDLE02_MSG_ORDER = f"{bc.OKBLUE}[M02 Bitthumb] Order Sent. Sleeping for 140 sec{bc.ENDC}"
 MIDDLE02_MSG_ERROR = f"{bc.WARNING}Not able. Restarting class method{bc.ENDC}"
 
