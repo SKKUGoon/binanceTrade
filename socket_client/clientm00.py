@@ -1,5 +1,7 @@
 from settings import wssmsg as wssmsgs
 from settings import sysmsg as sysmsgs
+from settings import _global_ as const
+
 from datetime import datetime, timedelta
 from typing import List
 import websockets
@@ -101,6 +103,10 @@ class UpbitNews:
         return obj[s : e].replace(' ', '').split(',')
 
     def _get_news(self, rptfmt:str='D%Y%m%dT%H:%M:%S'):
+        """
+        If "거래" and "추가" in article's title:
+            identify it as ICO event.
+        """
         r = requests.get(self.url)
         r = r.json()
 
@@ -136,7 +142,13 @@ class UpbitNews:
                     print(k)
                     self.p = k
 
-    def run(self):
+    def run(self, order_rest:int=60):
+        """
+        :param order_rest:
+        After finding the order rest for {order_rest} period
+            so that the program would identify the executed order
+            as the old one
+        """
         self._get_news()
         if len(self.od) == 0:
             print(
@@ -154,7 +166,7 @@ class UpbitNews:
             time.sleep(60)
 
 
-def middle00(sec:int=5):
+def middle00(sec:int):
     print(f'process name {__name__}')
     print(f'parent process {os.getppid()}')
     print(f'process id {os.getpid()}')
@@ -182,4 +194,4 @@ def middle00(sec:int=5):
 
 
 if __name__ == '__main__':
-    middle00()
+    middle00(sec=const.CLIENT_PING_BACK)

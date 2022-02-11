@@ -1,5 +1,7 @@
 from settings import wssmsg as wssmsgs
 from settings import sysmsg as sysmsgs
+from settings import _global_ as const
+
 from datetime import datetime, timedelta
 from html.parser import HTMLParser
 import websockets
@@ -17,7 +19,7 @@ import os
 # GATHER COIN ICO FROM UPBIT
 # BY CONSISTANTLY PINGING IT
 # FREQ: SECS
-async def alive(status, time_, myname:str='m00'):
+async def alive(status, time_, myname:str='m01'):
     url = "ws://127.0.0.1:7890"
 
     async with websockets.connect(url) as ws:
@@ -214,7 +216,7 @@ class BitThumbNews:
             time.sleep(self.holdings)
 
 
-def middle01(sec:int=5):
+def middle01(sec:int):
     print(f'process name {__name__}')
     print(f'parent process {os.getppid()}')
     print(f'process id {os.getpid()}')
@@ -236,9 +238,9 @@ def middle01(sec:int=5):
         asyncio.get_event_loop().run_until_complete(
             alive(status='error', time_=t)
         )
-        bn = BitThumbNews()
+        bn = BitThumbNews()  # New instance
         time.sleep(0.5)
 
 
 if __name__ == '__main__':
-    middle01()
+    middle01(sec=const.CLIENT_PING_BACK)

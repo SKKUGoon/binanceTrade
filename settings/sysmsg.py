@@ -27,7 +27,6 @@ BACK03_DISCORD_READY = f"[Discord] Ready"
 BACK03_DISCORD_CONNECTION = f"[Discord] sending connection ping"
 
 
-
 # MIDDLE OFFICE MODULE
 # MIDDLE01
 MIDDLE01_MSG_NOINFO = f"{bc.OKBLUE}[M01 Upbit] No new information{bc.ENDC}"
