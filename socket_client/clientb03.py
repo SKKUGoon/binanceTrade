@@ -41,11 +41,30 @@ def db_addr():
         return '/home/goon/crypto/binanceTrade/TDB.db'
 
 
+def process_msg(message:[tuple], normal:bool) -> str:
+    if len(message) > 0:
+        if normal is True:
+            w = [
+                "Most Recent Check-in",
+                f"date:{message[0][0]}",
+                f"time:{message[0][1]}",
+                f"status:{message[0][2]}"
+            ]
+        else:
+            w = [
+                "Recent Error Occured at",
+                f"date:{message[0][0]}",
+                f"time:{message[0][1]}",
+                f"status:{message[0][2]}"
+            ]
+        return '\n'.join(w)
+    else:
+        return ''
+
+
 class CryptoChat(discord.Client):
     PREFIX = "!"
     BOT = commands.Bot(command_prefix=PREFIX)
-    server = LocalDBMethods(db_addr())
-    server.set_wal()
 
     async def on_ready(self):
         game = discord.Game("Booted Up")
@@ -55,7 +74,6 @@ class CryptoChat(discord.Client):
         )
         print(sysmsgs.BACK03_DISCORD_READY)
 
-
     async def on_message(self, message):
         if message.author.BOT:
             return None
@@ -64,9 +82,43 @@ class CryptoChat(discord.Client):
 
     @staticmethod
     @BOT.command(name='connection')
-    async def connection_check(ctx):
+    async def connection_check(ctx) -> None:
         # await ctx.channel.send("")
         print(ctx.command)
+        server = LocalDBMethods(db_addr())
+        server.set_wal()
+
+        embeded = discord.Embed(
+            title="Crypto TradeBot Connection Report",
+            description="Module Connection Info",
+            color=0xFFFF00,
+            timestamp=ctx.message.created_at
+        )
+
+        for module in clienttree.MODULES['middle']:
+            cond1_normal = f'module = "{module}" and status = "normal"'
+            cond1_error = f'module = "{module}" and status = "error"'
+            cond2 = 'ORDER BY date, time DESC LIMIT 1'  # Choose recent 1
+            r_n = server.select_db(
+                target_table=table.TABLENAME_CLIENT,
+                target_column=['date', 'time', 'status'],
+                condition1=cond1_normal,
+                condition2=cond2
+            )
+            r_e = server.select_db(
+                target_table=table.TABLENAME_CLIENT,
+                target_column=['date', 'time', 'status'],
+                condition1=cond1_error,
+                condition2=cond2
+            )
+            contents = '\n\n'.join([process_msg(r_n, normal=True),
+                                    process_msg(r_e, normal=False)])
+            embeded.add_field(
+                name=clienttree.MODULES['middle'][module],
+                value=contents,
+                inline=True
+            )
+        await ctx.channel.send(embed=embeded)
 
 
     @staticmethod
