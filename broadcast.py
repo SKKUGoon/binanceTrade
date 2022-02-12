@@ -85,6 +85,7 @@ async def echo(websocket, path):
                 payload = json.dumps(wssmsgs.back_test_resp)
                 for back in backoffice:
                     await back.send(payload)
+                    await back.send(message)
                 for front in frontoffice:
                     await front.send(message)
 
