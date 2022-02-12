@@ -25,7 +25,9 @@ async def listen(server:LocalDBMethods2):
             msg = await ws.recv()
             m = json.loads(msg)
             if m['signal_type'] == 'trade':
-                print(m['data'])
+                print(m)
+            elif m['signal_type'] == 'test_trade':
+                print(m)
             elif m['signal_type'] == 'active_log':
                 print(m)
             else:
