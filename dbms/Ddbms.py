@@ -98,6 +98,9 @@ class LocalDBMethods2:
     def __version__(self):
         return 'LocalDBMethods2 version 1.2.0a'
 
+    def set_wal(self):
+        self.conn.execute("PRAGMA journal_mode=WAL")
+
     def _execute_query(self, query: str, multiple: bool, new_vals=None):
         """
         :param query: Any str() query statement for SQL
@@ -128,17 +131,17 @@ class LocalDBMethods2:
         qry = f'create table if not exists {table_name} ({new_cols})'
         self._execute_query(qry, False)
 
-    def create_table_w_pk(self, table_name: str, variables: dict, pk_loc:int):
+    def create_table_w_pk(self, table_name: str, variables: dict, pk_loc:[int]):
         # Column and data types of columns is needed in dict
-        assert pk_loc - 1 < len(variables), 'pk_loc out side of variables index'
-
-        pk = list(variables.keys())[pk_loc]
-        pk_val = variables[pk] + ' PRIMARY KEY'
-        variables[pk] = pk_val
+        pk = list(variables.keys())
+        pks = list()
+        for i in pk_loc:
+            pks.append(pk[i])
+        pks = ', '.join(pks)
 
         new_cols = ', '.join(str(a) + ' ' + str(b)
                              for a, b in zip(variables.keys(), variables.values()))
-        qry = f'create table if not exists {table_name} ({new_cols})'
+        qry = f'create table if not exists {table_name} ({new_cols}, PRIMARY KEY ({pks}))'
         self._execute_query(qry, False)
 
     def _create_connection(self, db):
