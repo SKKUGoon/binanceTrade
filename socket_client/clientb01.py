@@ -5,6 +5,7 @@ from settings import sysmsg as sysmsgs
 from settings import table
 from typing import List
 import websockets
+import platform
 import asyncio
 import time
 import json
@@ -17,6 +18,13 @@ import os
 # OBJECTIVE:
 # Get Messages and Record it in Database
 # FREQ: 5SECS
+
+def db_addr():
+    if platform.system() == 'Windows':
+        return '../TDB.db'
+    else:
+        return '/home/goon/crypto/binanceTrade/TDB.db'
+
 
 def insert_tlog(message:dict) -> [List]:
     """
@@ -108,7 +116,7 @@ def back01():
     print(f'process name {__name__}')
     print(f'parent process {os.getppid()}')
     print(f'process id {os.getpid()}')
-    db = LocalDBMethods('TDB.db')
+    db = LocalDBMethods(db_addr())
     asyncio.get_event_loop().run_until_complete(listen(db))
 
 
