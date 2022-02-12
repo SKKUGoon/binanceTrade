@@ -1,15 +1,17 @@
 import threading
 
 import ccxt
-
+import platform
 import json
 import time
 import math
-import os
 
 
 def get_token(target:str, typ:str, loc='..\key.json') -> str:
-    p = os.path.abspath('key.json')
+    if platform.system() == 'Windows':
+        pass
+    else:
+        loc = '/home/goon/crypto/binanceTrade/key.json'
     with open(loc, 'r') as file:
         dat = json.load(file)
     file.close()
