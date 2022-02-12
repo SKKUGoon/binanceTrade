@@ -96,7 +96,7 @@ class LocalDBMethods2:
                                 "STOCK": 'stock_tick_fre_data'}
 
     def __version__(self):
-        return 'LocalDBMethods2 version 1.2.0a'
+        return 'LocalDBMethods2 version 2.0.0'
 
     def set_wal(self):
         self.conn.execute("PRAGMA journal_mode=WAL")
@@ -223,6 +223,15 @@ class LocalDBMethods2:
         # Execute
         self._execute_query(qry, False, set_val)
 
+    def delete_oldest(self, table_name:str, num:int, condition:str=None):
+        subqry = f"SELECT ROWID FROM {table_name}"
+        if condition is not None:
+            subqry = f"{subqry} where {condition}"
+        subqry = f"{subqry} ORDER BY ROWID ASC LIMIT {num}"
+
+        qry = f"delete from {table_name} where ROWID in ({subqry})"
+        self._execute_query(qry, multiple=False)
+
     def delete_rows(self, table_name: str, condition=None):
         qry = f"delete from {table_name}"
         if condition is not None:
@@ -285,8 +294,12 @@ class LocalDBMethods2:
         c.close()
         return res
 
-    def count_rows(self, target_table):
+    def count_rows(self, target_table:str, condition:str=None):
+
         qry = f'SELECT COUNT(*) as cnt FROM {target_table}'
+        if condition is not None:
+            qry = f"{qry} where {condition}"
+
         # Execute query
         c = self.conn.cursor()
         c.execute(qry)

@@ -1,5 +1,9 @@
 from dbms.Ddbms import LocalDBMethods2
+from settings import _global_ as const
 from settings import wssmsg as wssmsgs
+from settings import sysmsg as sysmsgs
+from settings import table
+from typing import List
 import websockets
 import asyncio
 import time
@@ -14,7 +18,56 @@ import os
 # Get Messages and Record it in Database
 # FREQ: 5SECS
 
+def insert_tlog(message:dict) -> [List]:
+    """
+    :param message:
+    ==============================
+    Trade messages
+    - extract date, time, strategy_name, symbol
+    :return: List of List
+    """
+    d, t = message['date'].replace('D', '').split('T')
+    n = message['data']['strat_name']
+    a = message['data']['symbol']
+    return [[d, t, n, a]]
+
+
+def insert_clog(message:dict):
+    """
+    :param message:
+    ==============================
+    Ping Message
+    - extract date, time, module name, status
+    :return: List of List
+    """
+    dt = message['data']['t']
+    d = time.strftime("%Y%m%d", time.localtime(dt))
+    t = time.strftime("%H:%M:%S", time.localtime(dt))
+    n = message['data']['n']
+    s = message['data']['s']
+    return [[d, t, n, s]]
+
+
+def delete_old(server:LocalDBMethods2, modules:set) -> None:
+    for n in modules:
+        cond = f'module = "{n}"'
+        c = server.count_rows(
+            target_table=table.TABLENAME_CLIENT,
+            condition=cond
+        )
+        if c > const.CLIENT_LOG_COUNT:
+            server.delete_oldest(
+                table_name=table.TABLENAME_CLIENT,
+                num=1,
+                condition=cond,
+            )
+
+
 async def listen(server:LocalDBMethods2):
+    # MODULES
+    modules = set()
+
+    server.set_wal()
     url = "ws://127.0.0.1:7890"
     async with websockets.connect(url) as ws:
         cover = wssmsgs.back_conn_init
@@ -25,11 +78,28 @@ async def listen(server:LocalDBMethods2):
             msg = await ws.recv()
             m = json.loads(msg)
             if m['signal_type'] == 'trade':
-                print(m)
+                server.insert_rows(
+                    table_name=table.TABLENAME_STRAT,
+                    col_=list(table.TABLE_STRAT.keys()),
+                    rows_=insert_tlog(m)
+                )
+                print(sysmsgs.BACK01_DATABASE_MSG0)
             elif m['signal_type'] == 'test_trade':
-                print(m)
+                server.insert_rows(
+                    table_name=table.TABLENAME_STRAT,
+                    col_=list(table.TABLE_STRAT.keys()),
+                    rows_=insert_tlog(m)
+                )
+                print(sysmsgs.BACK01_DATABASE_MSG1)
             elif m['signal_type'] == 'active_log':
-                print(m)
+                modules.add(m['data']['n'])
+                server.insert_rows(
+                    table_name=table.TABLENAME_CLIENT,
+                    col_=list(table.TABLE_CLIENT.keys()),
+                    rows_=insert_clog(m)
+                )
+                delete_old(server, modules=modules)
+                print(sysmsgs.BACK01_DATABASE_MSG2)
             else:
                 pass
 

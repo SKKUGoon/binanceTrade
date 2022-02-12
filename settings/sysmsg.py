@@ -23,6 +23,10 @@ BROADCAST_FRNT_SIG0 = f"{bc.OKCYAN}[WS] FrontOffice has +1 Client{bc.ENDC}"
 BROADCAST_FRNT_SIG1 = f"{bc.OKCYAN}[WS] FrontOffice has -1 Client{bc.ENDC}"
 
 # BACK OFFICE MODULE
+BACK01_DATABASE_MSG0 = f"[B01 DBMS] {bc.HEADER}TRADE signal{bc.ENDC} inserted"
+BACK01_DATABASE_MSG1 = f"[B01 DBMS] {bc.HEADER}TEST TRADE{bc.ENDC} signal inserted"
+BACK01_DATABASE_MSG2 = f"[B01 DBMS] {bc.HEADER}PING{bc.ENDC} signal inserted"
+
 BACK03_DISCORD_READY = f"[Discord] Ready"
 BACK03_DISCORD_CONNECTION = f"[Discord] sending connection ping"
 
@@ -46,3 +50,14 @@ MIDDLE03_MSG_SIG_IND_OFF = f"{bc.OKBLUE}[Spread Arbitrage] Signal Off{bc.ENDC}"
 MIDDLE03_MSG_SIG_PRC = "Current Price Delivery: {}\nCurrent Price Perp: {}"
 MIDDLE03_MSG_SIG_SPD = "Current LONG Delivery: {}\nCurrent SHORT Perp: {}"
 MIDDLE03_MSG_SIG_FAIL = "Spread Signal too weak. Current Spread {}. Minimum Dist {}"
+
+
+# FRONT OFFICE MODULE
+# FRONT00
+FRONT00_MSG_BALANCE = f"{bc.OKCYAN}[F00 SPOT TRADER] Re-checking Balance.{bc.ENDC}"
+
+# FRONT01
+FRONT01_MSG_BALANCE = f"{bc.OKCYAN}[F01 SPREAD TRADER] Re-checking Balance.{bc.ENDC}"
+
+# FRONT02
+FRONT02_MSG_BALANCE = f"{bc.OKCYAN}[F02 FUTURE TRADER] Re-checking Balance.{bc.ENDC}"

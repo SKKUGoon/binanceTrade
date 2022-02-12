@@ -1,21 +1,35 @@
+from dbms.Ddbms import LocalDBMethods2
+
 
 # Event Driven Strategy Table
 
-TABLENAME_EVENTDRIVEN = "stgyedr"
-TABLE_EVENTDRIVEN = {
-    "date": "Varchar(8) NOT NULL",
-    "time": "Varchar(6) NOT NULL",
-    "asset": "Varchar(20) NOT NULL",
-    "strategy_name": "Varchar(20) NOT NULL",
-    "strategy": "Varchar(20)",
-    "source": "Varchar(20) NOT NULL"
+TABLENAME_STRAT = "LOG_STRATEGY"
+TABLE_STRAT = {
+    "date": "VARCHAR(20) NOT NULL",
+    "time": "VARCHAR(20) NOT NULL",
+    "strategy_name": "VARCHAR(20)",
+    "symbol": "VARCHAR(20)",
 }
 
 # Coin Account Balance
-TABLENAME_ACCOUNT = "stgrres"
-TABLE_ACCOUNT = {
-    "date": "Varchar(8) NOT NULL",
-    "time": "Varchar(6) NOT NULL",
-    "usdt_asset": "float",
-    "state": "Varchar(20)"
+TABLENAME_CLIENT = "LOG_CLIENT"
+TABLE_CLIENT = {
+    "date": "Varchar(10) NOT NULL",
+    "time": "Varchar(10) NOT NULL",
+    "module": "Varchar(20) NOT NULL",
+    "status": "Varchar(20)"
 }
+
+
+if __name__ == "__main__":
+    server = LocalDBMethods2(r'../socket_client/TDB.db')
+    server.create_table_w_pk(
+        table_name=TABLENAME_STRAT,
+        variables=TABLE_STRAT,
+        pk_loc=[0, 1]
+    )
+    server.create_table_w_pk(
+        table_name=TABLENAME_CLIENT,
+        variables=TABLE_CLIENT,
+        pk_loc=[0, 1, 2]
+    )
