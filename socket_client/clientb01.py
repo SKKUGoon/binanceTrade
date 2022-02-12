@@ -1,4 +1,4 @@
-from dbms.Ddbms import LocalDBMethods2
+from dbms.Ddbms import LocalDBMethods
 from settings import _global_ as const
 from settings import wssmsg as wssmsgs
 from settings import sysmsg as sysmsgs
@@ -48,7 +48,7 @@ def insert_clog(message:dict):
     return [[d, t, n, s]]
 
 
-def delete_old(server:LocalDBMethods2, modules:set) -> None:
+def delete_old(server:LocalDBMethods, modules:set) -> None:
     for n in modules:
         cond = f'module = "{n}"'
         c = server.count_rows(
@@ -63,7 +63,7 @@ def delete_old(server:LocalDBMethods2, modules:set) -> None:
             )
 
 
-async def listen(server:LocalDBMethods2):
+async def listen(server:LocalDBMethods):
     # MODULES
     modules = set()
 
@@ -108,7 +108,7 @@ def back01():
     print(f'process name {__name__}')
     print(f'parent process {os.getppid()}')
     print(f'process id {os.getpid()}')
-    db = LocalDBMethods2('TDB.db')
+    db = LocalDBMethods('TDB.db')
     asyncio.get_event_loop().run_until_complete(listen(db))
 
 

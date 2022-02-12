@@ -1,13 +1,13 @@
 import settings.table as config
 import settings.sysmsg_dep as msg
-from dbms.Ddbms import LocalDBMethods2
+from dbms.Ddbms import LocalDBMethods
 from model.N_v0 import UpBitNews
 
 
 class SigInsert:
     def __init__(self):
         # Insert Database
-        self.server = LocalDBMethods2('binance.db')
+        self.server = LocalDBMethods('binance.db')
         self.server.conn.execute(
             "PRAGMA journal_mode=WAL"
         )

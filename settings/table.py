@@ -1,4 +1,4 @@
-from dbms.Ddbms import LocalDBMethods2
+from dbms.Ddbms import LocalDBMethods
 
 
 # Event Driven Strategy Table
@@ -22,7 +22,7 @@ TABLE_CLIENT = {
 
 
 if __name__ == "__main__":
-    server = LocalDBMethods2(r'../socket_client/TDB.db')
+    server = LocalDBMethods(r'../socket_client/TDB.db')
     server.create_table_w_pk(
         table_name=TABLENAME_STRAT,
         variables=TABLE_STRAT,

@@ -1,8 +1,8 @@
-from dbms.Ddbms import LocalDBMethods2
+from dbms.Ddbms import LocalDBMethods
 from datetime import datetime
 
 
-server = LocalDBMethods2('binance.db')
+server = LocalDBMethods('binance.db')
 server.conn.execute(
     "Pragma journal_mode=WAL"
 )

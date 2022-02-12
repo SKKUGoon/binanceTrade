@@ -79,7 +79,7 @@ def accepts(*types):
     return check_accepts
 
 
-class LocalDBMethods2:
+class LocalDBMethods:
     """
     LocalDBMethods contains methods for
         1) getting table inside DB, getting columns from the table

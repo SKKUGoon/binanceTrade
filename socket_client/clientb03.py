@@ -1,10 +1,15 @@
+from settings import sysmsg as sysmsgs
+from settings import _global_ as const
+from settings import color as bc
+from settings import table
+from dbms.Ddbms import LocalDBMethods
+
 from discord.ext import commands
 import discord
-from settings import sysmsg as sysmsgs
-from settings import wssmsg as wssmsgs
-import websockets
-import asyncio
+
 from datetime import datetime
+import asyncio
+import platform
 import time
 import json
 import os
@@ -20,10 +25,14 @@ import os
 
 PREFIX = "!"
 BOT = commands.Bot(command_prefix=PREFIX)
+server = LocalDBMethods()
 
 
 def get_token(target:str, typ:str, loc='..\key.json') -> str:
-    p = os.path.abspath('key.json')
+    if platform.system() == 'Windows':
+        pass
+    else:
+        loc = '/home/goon/crypto/binanceTrade/key.json'
     with open(loc, 'r') as file:
         dat = json.load(file)
     file.close()

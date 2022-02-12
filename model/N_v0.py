@@ -1,4 +1,4 @@
-from dbms.Ddbms import LocalDBMethods2
+from dbms.Ddbms import LocalDBMethods
 import settings.table as config
 import settings.sysmsg_dep as msg
 
@@ -11,7 +11,7 @@ import requests
 
 class UpBitNews:
     today = datetime.now()
-    def __init__(self, database:LocalDBMethods2, test:bool=False,):
+    def __init__(self, database:LocalDBMethods, test:bool=False, ):
         self.url = "https://api-manager.upbit.com/api/v1/notices"
         self.db = database
         self.run(test=test)
