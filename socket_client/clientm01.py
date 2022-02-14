@@ -235,9 +235,11 @@ def middle01(sec:int):
     except Exception as e:
         print(e)
         print(sysmsgs.MIDDLE02_MSG_ERROR)
-        asyncio.get_event_loop().run_until_complete(
-            alive(status='error', time_=t)
-        )
+        if time.time() - t > sec:
+            t = time.time()
+            asyncio.get_event_loop().run_until_complete(
+                alive(status='error', time_=t)
+            )
         bn = BitThumbNews()  # New instance
         time.sleep(0.5)
 

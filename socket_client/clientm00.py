@@ -187,9 +187,11 @@ def middle00(sec:int):
         except Exception as e:
             print(e)
             print(sysmsgs.MIDDLE01_MSG_ERROR)
-            asyncio.get_event_loop().run_until_complete(
-                alive(status='error', time_=t)
-            )
+            if time.time() - t > sec:
+                t = time.time()
+                asyncio.get_event_loop().run_until_complete(
+                    alive(status='error', time_=t)
+                )
             time.sleep(0.5)
 
 
