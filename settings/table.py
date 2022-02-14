@@ -1,5 +1,5 @@
 from dbms.Ddbms import LocalDBMethods
-
+import platform
 
 # Event Driven Strategy Table
 
@@ -22,7 +22,11 @@ TABLE_CLIENT = {
 
 
 if __name__ == "__main__":
-    server = LocalDBMethods(r'../socket_client/TDB.db')
+    if platform.system() == 'Windows':
+        loc = '../TDB.db'
+    else:
+        loc = '/home/goon/crypto/binanceTrade/TDB.db'
+    server = LocalDBMethods(loc)
     server.create_table_w_pk(
         table_name=TABLENAME_STRAT,
         variables=TABLE_STRAT,
