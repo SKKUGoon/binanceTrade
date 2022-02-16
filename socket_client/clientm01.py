@@ -158,7 +158,9 @@ class BitThumbNews:
                         continue
 
                     # Current Information
-                    if "마켓" in r[title]:  # '마켓상장', '마켓추가'
+                    cond3 = "마켓" in r[title]
+                    cond4 = ("원화" in r[title]) or ("BTC" in r[title])
+                    if cond3 and cond4:  # '마켓상장', '마켓추가'
                         msg = r[title][8:]
 
                         # Detect coin ticker without regex
@@ -189,7 +191,7 @@ class BitThumbNews:
             "os": None,
             "ot": 2,
             "mtt": 20,
-            "sf": 0.15
+            "sf": 0.05
         }
         return k
 

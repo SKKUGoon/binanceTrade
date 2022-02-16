@@ -136,7 +136,7 @@ class UpbitNews:
                         "os": None,
                         "ot": 2,
                         "mtt": 20,
-                        "sf": 0.15
+                        "sf": 0.05
                     }
                     self.od.append(k)
                     print(k)
