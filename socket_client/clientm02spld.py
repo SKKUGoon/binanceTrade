@@ -155,7 +155,7 @@ class BinanceLiveStream:
     def qprocess_maintain_sec(self, value:float) -> None:
         if time.time() - self.time >= self.EQUIDIST:  # Append spread every {self.equidist} seconds
             print(f"SPREAD VALUE {value}")
-            if len(self.spld) > (60 / self.EQUIDIST) * self.EQUIMIN:
+            if len(self.spld) >= (60 / self.EQUIDIST) * self.EQUIMIN:
                 self._qprocess_maintain(value)
             else:
                 self.qprocess_prep(value)
