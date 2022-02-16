@@ -85,7 +85,7 @@ async def listen(server:LocalDBMethods):
         while True:
             msg = await ws.recv()
             m = json.loads(msg)
-            if m['signal_type'] == 'trade':
+            if m['signal_type'] == 'spot_trade':
                 server.insert_rows(
                     table_name=table.TABLENAME_STRAT,
                     col_=list(table.TABLE_STRAT.keys()),
