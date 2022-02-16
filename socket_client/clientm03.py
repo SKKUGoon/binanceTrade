@@ -97,31 +97,36 @@ class BinancePremiumIndex:
         imn = leverage_info['maintMarginRatio'] * 2
         return standard / imn
 
-    def calc_impact_bid_price(self, bid_info:[List], imn:float) -> ndarray:
-        value = 0
+    @staticmethod
+    def calc_impact_bid_price(bid_info:[List], imn:float) -> ndarray:
+        value, quantity = 0, 0
         impact_bids = list()
         for i, j in bid_info:
             value += np.multiply(float(i), float(j))
+            quantity += float(j)
             if value < imn:
                 impact_bids.append(float(i))
             else:
                 impact_bids.append(float(i))
                 break
-
-        ibp = np.mean(impact_bids)
+        # ibp = np.mean(impact_bids)
+        ibp = np.divide(value, quantity)
         return ibp
 
-    def calc_impact_ask_price(self, ask_info:[List], imn:float) -> ndarray:
-        value = 0
+    @staticmethod
+    def calc_impact_ask_price(ask_info:[List], imn:float) -> ndarray:
+        value, quantity = 0, 0
         impact_asks = list()
         for i, j in ask_info:
             value += np.multiply(float(i), float(j))
+            quantity += float(j)
             if value < imn:
                 impact_asks.append(float(i))
             else:
                 impact_asks.append(float(i))
                 break
-        ibp = np.mean(impact_asks)
+        # ibp = np.mean(impact_asks)
+        ibp = np.divide(value, quantity)
         return ibp
 
 
@@ -133,7 +138,7 @@ def middle03(symbol:str):
     while True:
         dt = datetime.now().strftime('%H%M%S')
         s = premium.calc_premium_index()
-        print(dt, s)
+        print(dt, round(s, 6))
         time.sleep(1)
 
 
