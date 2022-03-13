@@ -19,7 +19,7 @@ import os
 # GATHER COIN ICO FROM UPBIT
 # BY CONSISTANTLY PINGING IT
 # FREQ: SECS
-async def alive(status, time_, myname:str='m00'):
+async def alive(status, time_, myname: str = 'm00'):
     url = "ws://127.0.0.1:7890"
 
     async with websockets.connect(url) as ws:
@@ -38,8 +38,8 @@ async def alive(status, time_, myname:str='m00'):
         print(msg)
 
 
-async def ping(date:str, trader:str, symbol:str, asset_typ:str, mir:float, mim:int, om:str, os:str, ot:int,
-               mtt:int, sf:float, strnm:str):
+async def ping(date: str, trader: str, symbol: str, asset_typ: str, mir: float, mim: int,
+               om: str, os: str, ot: int, mtt: int, sf: float, strnm: str):
     """
     :param date: ping date
     :param trader: trading platform in {'binance'}
@@ -67,7 +67,7 @@ async def ping(date:str, trader:str, symbol:str, asset_typ:str, mir:float, mim:i
             'date': date,
             'trader': trader,
             'asset_type': asset_typ,  # spot
-            'data':{
+            'data': {
                 'strat_name': strnm,
                 'symbol': symbol,
                 'max_invest_ratio': mir,
@@ -88,21 +88,24 @@ async def ping(date:str, trader:str, symbol:str, asset_typ:str, mir:float, mim:i
 
 class UpbitNews:
     today = datetime.now()
+
     def __init__(self):
         self.url = "https://api-manager.upbit.com/api/v1/notices"
 
-    def __coin_clean(self, content) -> List:
+    @staticmethod
+    def __coin_clean(content) -> List:
         res = list()
         for _ in content:
             res = res + _.split(' : ')[1].replace(' ', '').split(',')
         return res
 
-    def _get_coin(self, rows:dict) -> List:
+    @staticmethod
+    def _get_coin(rows: dict) -> List:
         obj = rows['title']
         s, e = obj.index('(') + 1, obj.index(')')
-        return obj[s : e].replace(' ', '').split(',')
+        return obj[s: e].replace(' ', '').split(',')
 
-    def _get_news(self, rptfmt:str='D%Y%m%dT%H:%M:%S'):
+    def _get_news(self, rptfmt: str = 'D%Y%m%dT%H:%M:%S'):
         """
         If "거래" and "추가" in article's title:
             identify it as ICO event.
@@ -142,7 +145,7 @@ class UpbitNews:
                     print(k)
                     self.p = k
 
-    def run(self, order_rest:int=60):
+    def run(self, order_rest: int = 60):
         """
         :param order_rest:
         After finding the order rest for {order_rest} period
@@ -166,7 +169,7 @@ class UpbitNews:
             time.sleep(60)
 
 
-def middle00(sec:int):
+def middle00(sec: int):
     print(f'process name {__name__}')
     print(f'parent process {os.getppid()}')
     print(f'process id {os.getpid()}')
